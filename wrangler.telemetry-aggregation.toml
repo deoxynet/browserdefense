@@ -1,0 +1,71 @@
+# BrowserDefense Telemetry Aggregation Cloudflare Worker Configuration
+# Batch-based aggregation of DOM kit hash sightings for research
+# Reference: Issue #204
+#
+# See: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "browserdefense-telemetry-aggregation"
+main = "functions/telemetry-aggregation.ts"
+compatibility_date = "2024-01-01"
+
+# Node.js compatibility
+compatibility_flags = ["nodejs_compat"]
+
+# KV namespace for hash tracking data (read from shadow-telemetry)
+[[kv_namespaces]]
+binding = "HASH_TRACKING_KV"
+id = "YOUR_HASH_TRACKING_KV_ID"
+
+# KV namespace for aggregation results
+[[kv_namespaces]]
+binding = "AGGREGATION_KV"
+id = "YOUR_AGGREGATION_KV_ID"  # Set via: wrangler kv namespace create AGGREGATION_KV
+
+# Cron triggers for scheduled aggregation
+[triggers]
+crons = [
+  "0 2 * * *",   # Daily at 2am UTC
+  "0 3 * * 0",  # Weekly on Sundays at 3am UTC
+]
+
+# Development overrides
+[env.development]
+name = "browserdefense-telemetry-aggregation-dev"
+
+[[env.development.kv_namespaces]]
+binding = "HASH_TRACKING_KV"
+id = "YOUR_DEV_HASH_TRACKING_KV_ID"
+
+[[env.development.kv_namespaces]]
+binding = "AGGREGATION_KV"
+id = "YOUR_DEV_AGGREGATION_KV_ID"
+
+# Staging environment
+[env.staging]
+name = "browserdefense-telemetry-aggregation-staging"
+
+[[env.staging.kv_namespaces]]
+binding = "HASH_TRACKING_KV"
+id = "YOUR_STAGING_HASH_TRACKING_KV_ID"
+
+[[env.staging.kv_namespaces]]
+binding = "AGGREGATION_KV"
+id = "YOUR_STAGING_AGGREGATION_KV_ID"
+
+[env.staging.triggers]
+crons = ["0 2 * * *", "0 3 * * 0"]
+
+# Production environment
+[env.production]
+name = "browserdefense-telemetry-aggregation"
+
+[[env.production.kv_namespaces]]
+binding = "HASH_TRACKING_KV"
+id = "YOUR_PROD_HASH_TRACKING_KV_ID"
+
+[[env.production.kv_namespaces]]
+binding = "AGGREGATION_KV"
+id = "YOUR_PROD_AGGREGATION_KV_ID"
+
+[env.production.triggers]
+crons = ["0 2 * * *", "0 3 * * 0"]

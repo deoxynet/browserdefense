@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Test Data for Forensics Viewer</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 20px; }
+    button {
+      background: #58a6ff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    button:hover { opacity: 0.9; }
+    pre {
+      background: #161b22;
+      padding: 16px;
+      border-radius: 6px;
+      overflow: auto;
+      font-size: 12px;
+      border: 1px solid #30363d;
+    }
+    .section { margin: 24px 0; }
+    label { font-weight: 600; display: block; margin-bottom: 8px; }
+    .hint { color: #8b949e; font-size: 13px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Generate Test Data for Forensics Viewer</h1>
+  <p>This page generates a test keypair and encrypted forensics data to verify the viewer works correctly.</p>
+
+  <div class="section">
+    <button id="generateBtn">Generate Test Data</button>
+  </div>
+
+  <div class="section">
+    <label>Private Key (copy this to viewer)</label>
+    <pre id="privateKey">Click "Generate Test Data" to create...</pre>
+    <p class="hint">Copy this entire JSON block to the Private Key field in the viewer.</p>
+  </div>
+
+  <div class="section">
+    <label>Encrypted Forensics (copy this to viewer)</label>
+    <pre id="encryptedData">Click "Generate Test Data" to create...</pre>
+    <p class="hint">Copy this entire JSON block to the Encrypted Forensics field in the viewer.</p>
+  </div>
+
+  <div class="section">
+    <label>Original Data (for verification)</label>
+    <pre id="originalData">...</pre>
+  </div>
+
+  <script>
+    function arrayBufferToBase64(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary);
+    }
+
+    async function generateTestData() {
+      // Generate RSA keypair
+      const keyPair = await crypto.subtle.generateKey(
+        {
+          name: 'RSA-OAEP',
+          modulusLength: 2048,
+          publicExponent: new Uint8Array([1, 0, 1]),
+          hash: 'SHA-256'
+        },
+        true,
+        ['encrypt', 'decrypt']
+      );
+
+      const publicKey = await crypto.subtle.exportKey('jwk', keyPair.publicKey);
+      const privateKey = await crypto.subtle.exportKey('jwk', keyPair.privateKey);
+
+      // Generate test forensics payload
+      const testPayload = [
+        {
+          blockedUrl: 'https://evil-phishing.com/login',
+          timestamp: new Date().toISOString(),
+          redirectChain: [
+            'https://email-link.com/click?id=123',
+            'https://redirect-service.net/r/abc',
+            'https://evil-phishing.com/login'
+          ],
+          tabId: 42,
+          frameId: 0,
+          initiator: 'https://mail.google.com',
+          normalizedUrl: 'https://evil-phishing.com',
+          reason: 'ioc_match'
+        },
+        {
+          blockedUrl: 'https://malware-download.net/payload.exe',
+          timestamp: new Date(Date.now() - 3600000).toISOString(),
+          redirectChain: null,
+          tabId: 15,
+          frameId: 0,
+          initiator: 'https://sketchy-forum.com',
+          normalizedUrl: 'https://malware-download.net',
+          reason: 'ioc_match'
+        },
+        {
+          blockedUrl: 'https://credential-stealer.ru/form.html',
+          timestamp: new Date(Date.now() - 7200000).toISOString(),
+          redirectChain: [
+            'https://short.link/xyz',
+            'https://redirect1.com/go',
+            'https://redirect2.com/bounce',
+            'https://redirect3.com/forward',
+            'https://credential-stealer.ru/form.html'
+          ],
+          tabId: 88,
+          frameId: 0,
+          initiator: 'https://suspicious-email-attachment.com',
+          normalizedUrl: 'https://credential-stealer.ru',
+          reason: 'ioc_match'
+        }
+      ];
+
+      // Encrypt each record
+      const encryptedRecords = [];
+      for (const payload of testPayload) {
+        // Generate AES key
+        const aesKey = await crypto.subtle.generateKey(
+          { name: 'AES-GCM', length: 256 },
+          true,
+          ['encrypt']
+        );
+
+        // Generate IV
+        const iv = crypto.getRandomValues(new Uint8Array(12));
+
+        // Encrypt payload
+        const plaintext = new TextEncoder().encode(JSON.stringify(payload));
+        const ciphertext = await crypto.subtle.encrypt(
+          { name: 'AES-GCM', iv },
+          aesKey,
+          plaintext
+        );
+
+        // Export and wrap AES key
+        const rawAesKey = await crypto.subtle.exportKey('raw', aesKey);
+        const wrappedKey = await crypto.subtle.encrypt(
+          { name: 'RSA-OAEP' },
+          keyPair.publicKey,
+          rawAesKey
+        );
+
+        encryptedRecords.push({
+          iv: arrayBufferToBase64(iv),
+          wrappedKey: arrayBufferToBase64(wrappedKey),
+          ciphertext: arrayBufferToBase64(ciphertext)
+        });
+      }
+
+      // Display results
+      document.getElementById('privateKey').textContent = JSON.stringify(privateKey, null, 2);
+      document.getElementById('encryptedData').textContent = JSON.stringify(encryptedRecords, null, 2);
+      document.getElementById('originalData').textContent = JSON.stringify(testPayload, null, 2);
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', generateTestData);
+  </script>
+</body>
+</html>

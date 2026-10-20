@@ -1,0 +1,35 @@
+{
+  "name": "@blockioc/connector-securityhub",
+  "version": "0.1.0",
+  "description": "AWS Security Hub connector for BlockIOC forensics events",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@aws-sdk/client-securityhub": "^3.500.0",
+    "@blockioc/connector-sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0"
+  },
+  "peerDependencies": {
+    "@blockioc/connector-sdk": "workspace:*"
+  },
+  "license": "MIT"
+}

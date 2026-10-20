@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  BrowserDefense - ADML Language Resource File (English - United States)
+
+  This file contains localized strings for the BrowserDefense ADMX template.
+  Place in the appropriate language folder (e.g., en-US) in the PolicyDefinitions directory.
+-->
+<policyDefinitionResources xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           revision="1.0"
+                           schemaVersion="1.0"
+                           xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions">
+  <displayName>BrowserDefense Policy Definitions</displayName>
+  <description>Administrative template for managing BrowserDefense Chrome extension settings.</description>
+
+  <resources>
+    <stringTable>
+      <!-- Supported On -->
+      <string id="SUPPORTED_WIN7">Windows 7 and later</string>
+
+      <!-- Categories -->
+      <string id="BrowserDefense_Category">BrowserDefense</string>
+      <string id="BrowserDefense_Settings_Category">Settings</string>
+      <string id="BrowserDefense_Security_Category">Security</string>
+
+      <!-- Blocklist Endpoint -->
+      <string id="BlocklistEndpoint_DisplayName">Blocklist Endpoint URL</string>
+      <string id="BlocklistEndpoint_ExplainText">Specifies the URL where the extension fetches signed blocklist updates.
+
+This URL must serve a JSON manifest containing:
+- version: Monotonically increasing version number
+- timestamp: ISO 8601 timestamp
+- type: "full" or "delta"
+- hashes: Array of SHA-256 hashes (hex encoded)
+- signature: P-256 ECDSA signature (base64 encoded)
+
+Example: https://blocklist.example.com/v1/manifest.json
+
+If not configured, the extension will use its built-in default endpoint.</string>
+
+      <!-- Organization ID -->
+      <string id="OrganizationId_DisplayName">Organization ID</string>
+      <string id="OrganizationId_ExplainText">Specifies a unique identifier for your organization.
+
+This ID is included in forensics uploads to help identify which organization generated the alert. Use a UUID or your organization's domain name.
+
+Example: acme-corp or 550e8400-e29b-41d4-a716-446655440000
+
+If not configured, forensics data will not include organization identification.</string>
+
+      <!-- Forensics Endpoint -->
+      <string id="ForensicsEndpoint_DisplayName">Forensics Upload Endpoint URL</string>
+      <string id="ForensicsEndpoint_ExplainText">Specifies the URL where encrypted forensics data is uploaded.
+
+Forensics payloads are encrypted client-side using the configured Forensics Public Key before upload. The endpoint receives opaque encrypted blobs that can only be decrypted with your organization's private key.
+
+Example: https://siem.example.com/api/v1/forensics
+
+If not configured, forensics data will be queued locally but not uploaded.</string>
+
+      <!-- IOC Salt -->
+      <string id="IocSalt_DisplayName">IOC Hash Salt</string>
+      <string id="IocSalt_ExplainText">Specifies the salt used for hashing IOCs (Indicators of Compromise).
+
+This salt must match the value used when compiling blocklists with the BlockIOC CLI. Using a unique salt prevents adversaries from pre-computing hash lookups.
+
+Example: acme-corp-prod-2024
+
+This is a REQUIRED field. The extension will not function correctly without it.</string>
+
+      <!-- Update Interval -->
+      <string id="UpdateInterval_DisplayName">Blocklist Update Interval (minutes)</string>
+      <string id="UpdateInterval_ExplainText">Specifies how frequently the extension checks for blocklist updates, in minutes.
+
+Minimum: 5 minutes
+Maximum: 1440 minutes (24 hours)
+Default: 60 minutes
+
+Lower values increase network traffic and server load but provide faster protection against new threats. For most environments, the default of 60 minutes provides a good balance.
+
+If not configured, the extension defaults to 60-minute update intervals.</string>
+
+      <!-- Signing Public Key -->
+      <string id="SigningPublicKey_DisplayName">Blocklist Signing Public Key</string>
+      <string id="SigningPublicKey_ExplainText">Specifies the P-256 ECDSA public key used to verify blocklist signatures.
+
+The key must be provided in JWK (JSON Web Key) format. This key is critical for supply-chain security - blocklist updates will be rejected if they don't have a valid signature from this key.
+
+Example (single line, no whitespace):
+{"kty":"EC","crv":"P-256","x":"...","y":"..."}
+
+SECURITY: Keep your private key secure. If compromised, generate a new key pair and update this policy immediately.
+
+If not configured, the extension will use its built-in default public key.</string>
+
+      <!-- Encryption Public Key -->
+      <string id="EncryptionPublicKey_DisplayName">Forensics Encryption Public Key</string>
+      <string id="EncryptionPublicKey_ExplainText">Specifies the RSA-OAEP public key used to encrypt forensics data.
+
+The key must be provided in JWK format (typically RSA 2048-bit or 4096-bit). Forensics payloads are encrypted client-side using hybrid encryption (RSA-OAEP + AES-GCM) to ensure zero-knowledge - the BrowserDefense service never sees plaintext forensics.
+
+Example (truncated):
+{"kty":"RSA","n":"...","e":"AQAB"}
+
+Only your organization's private key can decrypt the forensics data. Store the private key securely in your SIEM or analysis infrastructure.
+
+This is a REQUIRED field. The extension will not function correctly without it.</string>
+
+      <!-- Enable Debug Logging -->
+      <string id="EnableDebugLogging_DisplayName">Enable Debug Logging</string>
+      <string id="EnableDebugLogging_ExplainText">Enables verbose debug logging in the browser console.
+
+When enabled, the extension logs detailed information about:
+- Blocklist loading and updates
+- Navigation blocking decisions
+- Forensics capture and upload
+- Error conditions
+
+Use this setting for troubleshooting deployment issues. Disable in production to reduce log noise.
+
+If not configured or disabled, the extension logs minimal information.</string>
+
+    </stringTable>
+
+    <presentationTable>
+      <!-- Blocklist Endpoint -->
+      <presentation id="BlocklistEndpoint">
+        <textBox refId="BlocklistEndpoint_Value">
+          <label>Endpoint URL:</label>
+        </textBox>
+      </presentation>
+
+      <!-- Organization ID -->
+      <presentation id="OrganizationId">
+        <textBox refId="OrganizationId_Value">
+          <label>Organization ID:</label>
+        </textBox>
+      </presentation>
+
+      <!-- Forensics Endpoint -->
+      <presentation id="ForensicsEndpoint">
+        <textBox refId="ForensicsEndpoint_Value">
+          <label>Forensics Endpoint URL:</label>
+        </textBox>
+      </presentation>
+
+      <!-- IOC Salt -->
+      <presentation id="IocSalt">
+        <textBox refId="IocSalt_Value">
+          <label>IOC Salt:</label>
+        </textBox>
+      </presentation>
+
+      <!-- Update Interval -->
+      <presentation id="UpdateInterval">
+        <decimalTextBox refId="UpdateInterval_Value" defaultValue="60">Update Interval (minutes):</decimalTextBox>
+      </presentation>
+
+      <!-- Signing Public Key -->
+      <presentation id="SigningPublicKey">
+        <textBox refId="SigningPublicKey_Value">
+          <label>Public Key (JWK format):</label>
+        </textBox>
+      </presentation>
+
+      <!-- Encryption Public Key -->
+      <presentation id="EncryptionPublicKey">
+        <textBox refId="EncryptionPublicKey_Value">
+          <label>Public Key (JWK format):</label>
+        </textBox>
+      </presentation>
+    </presentationTable>
+  </resources>
+</policyDefinitionResources>

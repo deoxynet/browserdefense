@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  BrowserDefense - ADMX Administrative Template for Group Policy
+
+  This template defines enterprise configuration settings for the BrowserDefense
+  Chrome extension. Deploy via Group Policy Management Console (GPMC).
+
+  Registry Path: HKLM\SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\{extension_id}\policy
+
+  For more information on Chrome extension policies, see:
+  https://support.google.com/chrome/a/answer/187202
+-->
+<policyDefinitions xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   revision="1.0"
+                   schemaVersion="1.0"
+                   xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions">
+
+  <policyNamespaces>
+    <target prefix="browserdefense" namespace="BrowserDefense.Policies" />
+    <using prefix="chrome" namespace="Google.Policies.Chrome" />
+  </policyNamespaces>
+
+  <resources minRequiredRevision="1.0" />
+
+  <supportedOn>
+    <definitions>
+      <definition name="SUPPORTED_WIN7" displayName="$(string.SUPPORTED_WIN7)"/>
+    </definitions>
+  </supportedOn>
+
+  <categories>
+    <category name="BrowserDefense" displayName="$(string.BrowserDefense_Category)">
+      <parentCategory ref="chrome:Cat_Google" />
+    </category>
+    <category name="BrowserDefense_Settings" displayName="$(string.BrowserDefense_Settings_Category)">
+      <parentCategory ref="BrowserDefense" />
+    </category>
+    <category name="BrowserDefense_Security" displayName="$(string.BrowserDefense_Security_Category)">
+      <parentCategory ref="BrowserDefense" />
+    </category>
+  </categories>
+
+  <policies>
+    <!-- Blocklist Endpoint URL -->
+    <policy name="BlocklistEndpoint"
+            class="Machine"
+            displayName="$(string.BlocklistEndpoint_DisplayName)"
+            explainText="$(string.BlocklistEndpoint_ExplainText)"
+            key="SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\browserdefense_extension_id\policy"
+            valueName="blocklist_endpoint">
+      <parentCategory ref="BrowserDefense_Settings" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="BlocklistEndpoint_Value" valueName="blocklist_endpoint" required="true" />
+      </elements>
+    </policy>
+
+    <!-- Organization ID -->
+    <policy name="OrganizationId"
+            class="Machine"
+            displayName="$(string.OrganizationId_DisplayName)"
+            explainText="$(string.OrganizationId_ExplainText)"
+            key="SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\browserdefense_extension_id\policy"
+            valueName="org_id">
+      <parentCategory ref="BrowserDefense_Settings" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="OrganizationId_Value" valueName="org_id" required="true" />
+      </elements>
+    </policy>
+
+    <!-- Forensics Endpoint URL -->
+    <policy name="ForensicsEndpoint"
+            class="Machine"
+            displayName="$(string.ForensicsEndpoint_DisplayName)"
+            explainText="$(string.ForensicsEndpoint_ExplainText)"
+            key="SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\browserdefense_extension_id\policy"
+            valueName="forensics_endpoint">
+      <parentCategory ref="BrowserDefense_Settings" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="ForensicsEndpoint_Value" valueName="forensics_endpoint" required="true" />
+      </elements>
+    </policy>
+
+    <!-- IOC Salt -->
+    <policy name="IocSalt"
+            class="Machine"
+            displayName="$(string.IocSalt_DisplayName)"
+            explainText="$(string.IocSalt_ExplainText)"
+            key="SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\browserdefense_extension_id\policy"
+            valueName="ioc_salt">
+      <parentCategory ref="BrowserDefense_Security" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="IocSalt_Value" valueName="ioc_salt" required="true" />
+      </elements>
+    </policy>
+
+    <!-- Update Interval (minutes) -->
+    <policy name="UpdateInterval"
+            class="Machine"
+            displayName="$(string.UpdateInterval_DisplayName)"
+            explainText="$(string.UpdateInterval_ExplainText)"
+            key="SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\browserdefense_extension_id\policy"
+            valueName="update_interval_minutes">
+      <parentCategory ref="BrowserDefense_Settings" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <decimal id="UpdateInterval_Value" valueName="update_interval_minutes" minValue="5" maxValue="1440" />
+      </elements>
+    </policy>
+
+    <!-- Signing Public Key (JWK) -->
+    <policy name="SigningPublicKey"
+            class="Machine"
+            displayName="$(string.SigningPublicKey_DisplayName)"
+            explainText="$(string.SigningPublicKey_ExplainText)"
+            key="SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\browserdefense_extension_id\policy"
+            valueName="signing_public_key">
+      <parentCategory ref="BrowserDefense_Security" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="SigningPublicKey_Value" valueName="signing_public_key" required="true" maxLength="2048" />
+      </elements>
+    </policy>
+
+    <!-- Encryption Public Key (JWK) -->
+    <policy name="EncryptionPublicKey"
+            class="Machine"
+            displayName="$(string.EncryptionPublicKey_DisplayName)"
+            explainText="$(string.EncryptionPublicKey_ExplainText)"
+            key="SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\browserdefense_extension_id\policy"
+            valueName="encryption_public_key">
+      <parentCategory ref="BrowserDefense_Security" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="EncryptionPublicKey_Value" valueName="encryption_public_key" required="true" maxLength="4096" />
+      </elements>
+    </policy>
+
+    <!-- Enable Debug Logging -->
+    <policy name="EnableDebugLogging"
+            class="Machine"
+            displayName="$(string.EnableDebugLogging_DisplayName)"
+            explainText="$(string.EnableDebugLogging_ExplainText)"
+            key="SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\browserdefense_extension_id\policy"
+            valueName="enable_debug_logging">
+      <parentCategory ref="BrowserDefense_Settings" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <enabledValue>
+        <decimal value="1" />
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0" />
+      </disabledValue>
+    </policy>
+
+  </policies>
+</policyDefinitions>

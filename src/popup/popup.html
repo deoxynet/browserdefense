@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrowserDefense</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup">
+    <header class="header">
+      <h1 class="logo">BrowserDefense</h1>
+      <div class="status" id="status" role="status" aria-live="polite">
+        <span class="status-dot" id="status-dot" aria-hidden="true"></span>
+        <span class="status-text" id="status-text">Checking...</span>
+      </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <section class="stats">
+      <div class="stat-row">
+        <span class="stat-label">Blocklist</span>
+        <span class="stat-value" id="ioc-count">Loading...</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Last updated</span>
+        <span class="stat-value" id="last-update">--</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Recent blocks</span>
+        <span class="stat-value" id="blocks-count">0</span>
+      </div>
+      <div class="stat-row" id="pending-row">
+        <span class="stat-label">Pending uploads</span>
+        <span class="stat-value" id="pending-count">0</span>
+      </div>
+    </section>
+
+    <!-- Hunter Mode: Quick-add IOC (hidden for sensor mode) -->
+    <section class="hunter-section" id="hunter-section">
+      <h2 class="section-title">Add IOC</h2>
+      <div class="add-ioc-form">
+        <input type="text"
+               class="ioc-input"
+               id="ioc-input"
+               placeholder="Domain, URL, or IP address"
+               autocomplete="off"
+               aria-label="Enter domain, URL, or IP address to block">
+        <button class="btn btn-primary btn-add" id="btn-add-ioc" aria-label="Add IOC to blocklist">Add</button>
+      </div>
+      <div class="ioc-feedback" id="ioc-feedback" role="status" aria-live="polite"></div>
+    </section>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-update" aria-label="Update blocklist now">Update Now</button>
+      <button class="btn btn-secondary" id="btn-settings" aria-label="Open extension settings">Settings</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <section class="recent" id="recent-section" aria-label="Recent blocked URLs">
+      <h2 class="section-title">Recent Blocks</h2>
+      <div class="recent-list" id="recent-list" role="log" aria-live="polite" aria-label="List of recently blocked URLs">
+        <div class="recent-empty">No recent blocks</div>
+      </div>
+    </section>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  BrowserDefense Chrome Extension - macOS Configuration Profile
+
+  Deploy via:
+  - Jamf Pro
+  - Mosyle
+  - Kandji
+  - Workspace ONE
+  - Manual: sudo profiles install -path BrowserDefense.mobileconfig
+
+  For Chrome managed preferences, the profile targets:
+  com.google.Chrome.extensions.browserdefense_extension_id
+
+  Replace 'browserdefense_extension_id' with your actual extension ID.
+-->
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <!-- Chrome ExtensionSettings - Force Install -->
+        <dict>
+            <key>PayloadType</key>
+            <string>com.google.Chrome</string>
+            <key>PayloadIdentifier</key>
+            <string>com.browserdefense.chrome.extensionsettings</string>
+            <key>PayloadUUID</key>
+            <string>A1B2C3D4-E5F6-7890-ABCD-EF1234567890</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>PayloadDisplayName</key>
+            <string>BrowserDefense Extension Installation</string>
+            <key>PayloadDescription</key>
+            <string>Force-installs BrowserDefense Chrome extension</string>
+            <key>ExtensionSettings</key>
+            <dict>
+                <key>browserdefense_extension_id</key>
+                <dict>
+                    <key>installation_mode</key>
+                    <string>force_installed</string>
+                    <key>update_url</key>
+                    <string>https://clients2.google.com/service/update2/crx</string>
+                    <key>toolbar_pin</key>
+                    <string>force_pinned</string>
+                </dict>
+            </dict>
+        </dict>
+
+        <!-- BrowserDefense Extension Policy -->
+        <dict>
+            <key>PayloadType</key>
+            <string>com.google.Chrome.extensions.browserdefense_extension_id</string>
+            <key>PayloadIdentifier</key>
+            <string>com.browserdefense.chrome.policy</string>
+            <key>PayloadUUID</key>
+            <string>B2C3D4E5-F6A7-8901-BCDE-F23456789012</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>PayloadDisplayName</key>
+            <string>BrowserDefense Extension Configuration</string>
+            <key>PayloadDescription</key>
+            <string>Configures BrowserDefense extension settings</string>
+
+            <!-- Blocklist Endpoint URL -->
+            <key>blocklist_endpoint</key>
+            <string>https://blocklist.example.com/v1/manifest.json</string>
+
+            <!-- Organization ID -->
+            <key>org_id</key>
+            <string>your-organization-id</string>
+
+            <!-- Forensics Upload Endpoint (REQUIRED) -->
+            <key>forensics_endpoint</key>
+            <string>https://siem.example.com/api/v1/forensics</string>
+
+            <!-- IOC Salt (REQUIRED) -->
+            <!-- Must match the salt used when compiling blocklists -->
+            <key>ioc_salt</key>
+            <string>your-ioc-salt-value</string>
+
+            <!-- Update Interval (minutes) -->
+            <key>update_interval_minutes</key>
+            <integer>60</integer>
+
+            <!-- Signing Public Key (JWK) (REQUIRED) -->
+            <!-- Replace with your generated key -->
+            <key>signing_public_key</key>
+            <string>{"kty":"EC","crv":"P-256","x":"YOUR_X_COORDINATE","y":"YOUR_Y_COORDINATE"}</string>
+
+            <!-- Encryption Public Key (JWK) (REQUIRED) -->
+            <!-- Replace with your generated key -->
+            <key>encryption_public_key</key>
+            <string>{"kty":"RSA","n":"YOUR_MODULUS","e":"AQAB"}</string>
+
+            <!-- Debug Logging -->
+            <key>enable_debug_logging</key>
+            <false/>
+        </dict>
+    </array>
+
+    <key>PayloadDisplayName</key>
+    <string>BrowserDefense Chrome Extension</string>
+    <key>PayloadDescription</key>
+    <string>Deploys and configures BrowserDefense browser-based IOC blocking extension</string>
+    <key>PayloadIdentifier</key>
+    <string>com.browserdefense.profile</string>
+    <key>PayloadOrganization</key>
+    <string>Your Organization</string>
+    <key>PayloadRemovalDisallowed</key>
+    <true/>
+    <key>PayloadScope</key>
+    <string>System</string>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>C3D4E5F6-A789-0123-CDEF-345678901234</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+</dict>
+</plist>

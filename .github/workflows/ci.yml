@@ -1,0 +1,66 @@
+name: CI
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan source and history with Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Scan tracked files for secrets
+        run: python3 scripts/scan-secrets.py
+
+      - name: Type check
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Build
+        run: pnpm run build:all
+
+      - name: Run tests
+        run: pnpm run test
+
+      - name: Verify built extension packages
+        run: pnpm run test:manifest
+
+      - name: Install CLI dependencies
+        run: cd cli && pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        run: cd cli && pnpm run build
+
+      - name: Run CLI tests
+        run: cd cli && pnpm test

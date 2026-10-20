@@ -1,0 +1,48 @@
+# BrowserDefense Hash Labels Cloudflare Worker Configuration
+# Server-side storage for analyst TP/FP labels on DOM kit hashes
+# Reference: Issue #205
+#
+# See: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "browserdefense-hash-labels"
+main = "functions/hash-labels.ts"
+compatibility_date = "2024-01-01"
+
+# Node.js compatibility
+compatibility_flags = ["nodejs_compat"]
+
+# KV namespace for label storage
+[[kv_namespaces]]
+binding = "HASH_LABELS_KV"
+id = "YOUR_HASH_LABELS_KV_ID"  # Set via: wrangler kv namespace create HASH_LABELS_KV
+
+[vars]
+# Public configuration
+CORS_ORIGIN = "*"
+
+# Development overrides
+[env.development]
+name = "browserdefense-hash-labels-dev"
+
+[[env.development.kv_namespaces]]
+binding = "HASH_LABELS_KV"
+id = "YOUR_DEV_HASH_LABELS_KV_ID"
+
+[env.development.vars]
+CORS_ORIGIN = "http://localhost:3000"
+
+# Staging environment
+[env.staging]
+name = "browserdefense-hash-labels-staging"
+
+[[env.staging.kv_namespaces]]
+binding = "HASH_LABELS_KV"
+id = "YOUR_STAGING_HASH_LABELS_KV_ID"
+
+# Production environment
+[env.production]
+name = "browserdefense-hash-labels"
+
+[[env.production.kv_namespaces]]
+binding = "HASH_LABELS_KV"
+id = "YOUR_PROD_HASH_LABELS_KV_ID"

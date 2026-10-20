@@ -1,0 +1,13 @@
+{
+  "supabase_url": "https://your-project.supabase.co",
+  "supabase_key": "your-service-role-key",
+  "org_id": "your-org-uuid",
+  "key_path": "./keys/encryption-private.jwk",
+  "connector": {
+    "type": "splunk",
+    "url": "https://your-splunk.example.com:8088/services/collector/event",
+    "token": "your-hec-token"
+  },
+  "poll_interval": 30,
+  "batch_size": 100
+}

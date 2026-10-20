@@ -1,0 +1,107 @@
+{
+  "name": "browserdefense",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser-based IOC blocking with zero-knowledge forensics",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "tsc && vite build && vite build --config vite.content.config.ts && pnpm run copy-static",
+    "build:enterprise": "tsc && vite build --outDir dist-enterprise && vite build --config vite.content.config.ts --outDir dist-enterprise && pnpm run copy-static:enterprise",
+    "build:all": "pnpm run build && pnpm run build:enterprise",
+    "copy-static": "cp manifest.json dist/ && cp src/popup/popup.html dist/ && cp src/popup/popup.css dist/ && cp src/options/options.html dist/ && cp src/options/options.css dist/ && mkdir -p dist/blocked && cp src/blocked/blocked.html dist/blocked/ && cp src/blocked/blocked.css dist/blocked/ && mkdir -p dist/dashboard && cp src/dashboard/dashboard.html dist/dashboard/ && cp src/dashboard/dashboard.css dist/dashboard/ && mkdir -p dist/icons && cp icons/*.png dist/icons/",
+    "copy-static:enterprise": "cp manifest.enterprise.json dist-enterprise/manifest.json && cp src/popup/popup.html dist-enterprise/ && cp src/popup/popup.css dist-enterprise/ && cp src/options/options.html dist-enterprise/ && cp src/options/options.css dist-enterprise/ && mkdir -p dist-enterprise/blocked && cp src/blocked/blocked.html dist-enterprise/blocked/ && cp src/blocked/blocked.css dist-enterprise/blocked/ && mkdir -p dist-enterprise/dashboard && cp src/dashboard/dashboard.html dist-enterprise/dashboard/ && cp src/dashboard/dashboard.css dist-enterprise/dashboard/ && mkdir -p dist-enterprise/icons && cp icons/*.png dist-enterprise/icons/",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:manifest": "vitest run tests/integration/manifest-packaging.test.ts",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "cli:build": "cd cli && pnpm run build",
+    "cli:test": "cd cli && pnpm test",
+    "worker:blocklist:dev": "wrangler dev -c wrangler.blocklist.toml",
+    "worker:blocklist:deploy": "wrangler deploy -c wrangler.blocklist.toml",
+    "worker:blocklist:deploy:staging": "wrangler deploy -c wrangler.blocklist.toml --env staging",
+    "worker:blocklist:deploy:production": "wrangler deploy -c wrangler.blocklist.toml --env production",
+    "worker:api:dev": "wrangler dev -c wrangler.toml",
+    "worker:api:deploy": "wrangler deploy -c wrangler.toml",
+    "worker:api:deploy:dev": "wrangler deploy -c wrangler.toml --env dev",
+    "worker:shadow-telemetry:dev": "wrangler dev -c wrangler.shadow-telemetry.toml",
+    "worker:shadow-telemetry:deploy": "wrangler deploy -c wrangler.shadow-telemetry.toml",
+    "worker:shadow-telemetry:deploy:staging": "wrangler deploy -c wrangler.shadow-telemetry.toml --env staging",
+    "worker:shadow-telemetry:deploy:production": "wrangler deploy -c wrangler.shadow-telemetry.toml --env production",
+    "worker:hash-labels:dev": "wrangler dev -c wrangler.hash-labels.toml",
+    "worker:hash-labels:deploy": "wrangler deploy -c wrangler.hash-labels.toml",
+    "worker:hash-labels:deploy:staging": "wrangler deploy -c wrangler.hash-labels.toml --env staging",
+    "worker:hash-labels:deploy:production": "wrangler deploy -c wrangler.hash-labels.toml --env production",
+    "worker:pipe:dev": "wrangler dev -c wrangler.pipe.toml",
+    "worker:pipe:deploy": "wrangler deploy -c wrangler.pipe.toml",
+    "worker:pipe:deploy:staging": "wrangler deploy -c wrangler.pipe.toml --env staging",
+    "worker:pipe:deploy:production": "wrangler deploy -c wrangler.pipe.toml --env production",
+    "demo": "npx tsx docs/demo/generate-demo.ts",
+    "prepare": "husky",
+    "package": "pnpm run build:all && bash scripts/package-extension.sh && bash scripts/package-extension.sh enterprise",
+    "check": "pnpm run typecheck && pnpm run lint && pnpm run build:all && pnpm test && pnpm run cli:build && pnpm run cli:test && pnpm run test:manifest",
+    "security:scan": "python3 scripts/scan-secrets.py"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260702.1",
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.64.1",
+    "@types/chrome": "^0.0.268",
+    "@types/jsdom": "^27.0.0",
+    "@types/node": "^22.20.5",
+    "@types/plist": "^3.0.5",
+    "@types/sharp": "^0.31.1",
+    "@typescript-eslint/eslint-plugin": "^8.72.0",
+    "@typescript-eslint/parser": "^8.72.0",
+    "@vitest/coverage-v8": "^4.1.12",
+    "ajv": "^8.20.0",
+    "eslint": "^9.39.5",
+    "fake-indexeddb": "^6.2.6",
+    "fast-xml-parser": "^5.11.2",
+    "globals": "^17.13.0",
+    "husky": "^9.1.7",
+    "jsdom": "^27.4.0",
+    "miniflare": "^4.20260730.0",
+    "plist": "^3.1.1",
+    "sharp": "^0.35.5",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.7",
+    "vitest": "^4.1.12",
+    "wrangler": "^4.151.3"
+  },
+  "dependencies": {
+    "tldts": "^7.4.19",
+    "undici": "^8.12.3",
+    "zod": "^4.6.7"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "packageManager": "pnpm@10.27.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deoxynet/browserdefense.git"
+  },
+  "bugs": {
+    "url": "https://github.com/deoxynet/browserdefense/issues"
+  },
+  "homepage": "https://github.com/deoxynet/browserdefense#readme",
+  "license": "GPL-3.0-only",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "workerd"
+    ],
+    "overrides": {
+      "miniflare>undici": "^7.29.1",
+      "miniflare>sharp": "^0.35.5"
+    }
+  }
+}

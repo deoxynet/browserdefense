@@ -1,0 +1,29 @@
+# BlockIOC Pipe Server Worker
+# SSE stream pass-through for real-time ack delivery
+
+name = "blockioc-pipe-server"
+main = "functions/pipe.ts"
+compatibility_date = "2024-01-01"
+
+[observability]
+enabled = true
+
+# Durable Object for maintaining SSE connections per op_id
+[durable_objects]
+bindings = [
+  { name = "PIPE_SESSIONS", class_name = "PipeSession" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["PipeSession"]
+
+[env.staging]
+name = "blockioc-pipe-server-staging"
+
+[env.production]
+name = "blockioc-pipe-server-production"
+
+[vars]
+CORS_ORIGIN = "*"
+HEARTBEAT_INTERVAL_MS = "15000"

@@ -1,0 +1,68 @@
+# BrowserDefense Forensics Upload Cloudflare Worker Configuration
+# See: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "browserdefense-forensics"
+main = "functions/forensics.ts"
+compatibility_date = "2024-01-01"
+
+# Node.js compatibility for crypto APIs
+compatibility_flags = ["nodejs_compat"]
+
+# R2 bucket binding for forensics storage
+[[r2_buckets]]
+binding = "FORENSICS_BUCKET"
+bucket_name = "browserdefense-forensics"
+preview_bucket_name = "browserdefense-forensics-preview"
+
+# KV namespace for rate limiting
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "YOUR_KV_NAMESPACE_ID"  # Set via: wrangler kv namespace create RATE_LIMIT_KV
+
+[vars]
+# Public configuration
+CORS_ORIGIN = "*"
+# Supabase configuration - Set SUPABASE_SERVICE_ROLE_KEY via: wrangler secret put SUPABASE_SERVICE_ROLE_KEY
+SUPABASE_URL = "https://your-project.supabase.co"
+
+# Development overrides
+[env.development]
+name = "browserdefense-forensics-dev"
+
+[[env.development.kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "YOUR_DEV_KV_NAMESPACE_ID"  # Set via: wrangler kv namespace create RATE_LIMIT_KV --env development
+
+[env.development.vars]
+CORS_ORIGIN = "http://localhost:3000"
+SUPABASE_URL = "http://127.0.0.1:54321"
+
+# Staging environment
+[env.staging]
+name = "browserdefense-forensics-staging"
+
+[[env.staging.r2_buckets]]
+binding = "FORENSICS_BUCKET"
+bucket_name = "browserdefense-forensics-staging"
+
+[[env.staging.kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "YOUR_STAGING_KV_NAMESPACE_ID"
+
+[env.staging.vars]
+SUPABASE_URL = "https://your-staging-project.supabase.co"
+
+# Production environment
+[env.production]
+name = "browserdefense-forensics"
+
+[[env.production.r2_buckets]]
+binding = "FORENSICS_BUCKET"
+bucket_name = "browserdefense-forensics"
+
+[[env.production.kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "YOUR_PROD_KV_NAMESPACE_ID"
+
+[env.production.vars]
+SUPABASE_URL = "https://your-production-project.supabase.co"

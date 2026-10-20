@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Shield shape - security/protection -->
+  <path d="M64 8 L116 28 L116 60 C116 92 92 116 64 124 C36 116 12 92 12 60 L12 28 Z"
+        fill="#2563eb" stroke="#1d4ed8" stroke-width="2"/>
+
+  <!-- Inner shield highlight -->
+  <path d="M64 16 L108 33 L108 58 C108 86 87 107 64 114 C41 107 20 86 20 58 L20 33 Z"
+        fill="#3b82f6"/>
+
+  <!-- Block/Stop symbol - circle with diagonal line -->
+  <circle cx="64" cy="62" r="28" fill="none" stroke="#ffffff" stroke-width="8"/>
+  <line x1="44" y1="42" x2="84" y2="82" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+</svg>

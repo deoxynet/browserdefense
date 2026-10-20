@@ -1,0 +1,56 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-enterprise/
+cli/dist/
+
+# IDE
+.idea/
+*.swp
+*.swo
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test artifacts
+playwright-report/
+test-results/
+
+# Dev profiles
+.chrome-dev-profile/
+
+# Herd state
+.herd/
+
+# Demo generation artifacts
+docs/demo/frames/
+docs/demo/frames-normalized/
+
+# Local cloud emulator data
+.wrangler/
+
+# Credentials and generated key material
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jwk
+keys/
+
+# Release archives
+browserdefense-v*.zip
+browserdefense-enterprise-v*.zip

@@ -1,0 +1,57 @@
+Windows Registry Editor Version 5.00
+
+; BrowserDefense Chrome Extension - Sample Registry Configuration
+;
+; INSTRUCTIONS:
+; 1. Replace 'browserdefense_extension_id' with your actual extension ID
+; 2. Replace placeholder values with your organization's configuration
+; 3. Import using: reg import BrowserDefense-Sample.reg (as Administrator)
+; 4. Restart Chrome to apply policies
+;
+; Verify settings at: chrome://policy
+
+; =============================================================================
+; Extension Installation Settings
+; Force-install the extension and pin to toolbar
+; =============================================================================
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\ExtensionSettings\browserdefense_extension_id]
+@="{\"installation_mode\":\"force_installed\",\"update_url\":\"https://clients2.google.com/service/update2/crx\",\"toolbar_pin\":\"force_pinned\"}"
+
+; =============================================================================
+; BrowserDefense Extension Configuration
+; These settings are read by the extension via chrome.storage.managed
+; =============================================================================
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Google\Chrome\3rdparty\extensions\browserdefense_extension_id\policy]
+
+; Blocklist Endpoint URL (REQUIRED)
+; The URL where signed blocklist updates are fetched
+"blocklist_endpoint"="https://blocklist.example.com/v1/manifest.json"
+
+; Organization ID (REQUIRED)
+; Unique identifier included in forensics data
+"org_id"="your-organization-id"
+
+; Forensics Upload Endpoint (REQUIRED)
+; URL for uploading encrypted forensics data
+"forensics_endpoint"="https://siem.example.com/api/v1/forensics"
+
+; IOC Salt (REQUIRED)
+; Salt for IOC hashing - must match CLI compile salt
+"ioc_salt"="your-ioc-salt-value"
+
+; Update Interval in Minutes (OPTIONAL, default: 60)
+; How often to check for blocklist updates (5-1440)
+"update_interval_minutes"=dword:0000003c
+
+; Signing Public Key (REQUIRED)
+; P-256 ECDSA public key in JWK format for signature verification
+; IMPORTANT: Must be a valid JSON string, escaped for registry
+"signing_public_key"="{\"kty\":\"EC\",\"crv\":\"P-256\",\"x\":\"YOUR_X_COORDINATE_BASE64URL\",\"y\":\"YOUR_Y_COORDINATE_BASE64URL\"}"
+
+; Encryption Public Key (REQUIRED)
+; RSA-OAEP public key in JWK format for encrypting forensics
+"encryption_public_key"="{\"kty\":\"RSA\",\"n\":\"YOUR_MODULUS_BASE64URL\",\"e\":\"AQAB\"}"
+
+; Debug Logging (OPTIONAL, default: 0)
+; Set to 1 to enable verbose console logging
+"enable_debug_logging"=dword:00000000

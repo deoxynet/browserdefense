@@ -1,0 +1,87 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "description": "BrowserDefense Chrome Extension - Intune OMA-URI Configuration Template",
+  "metadata": {
+    "displayName": "BrowserDefense Configuration",
+    "description": "Configure BrowserDefense Chrome extension via Intune custom policy",
+    "version": "1.0.0",
+    "platform": "Windows 10 and later",
+    "category": "Security"
+  },
+  "omaSettings": [
+    {
+      "name": "BrowserDefense - ExtensionSettings Policy",
+      "description": "Master Chrome extension settings for BrowserDefense. This enables managed installation and configuration of the extension.",
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/ExtensionSettings",
+      "dataType": "String",
+      "value": "{\"browserdefense_extension_id\":{\"installation_mode\":\"force_installed\",\"update_url\":\"https://clients2.google.com/service/update2/crx\",\"toolbar_pin\":\"force_pinned\"}}"
+    },
+    {
+      "name": "BrowserDefense - Blocklist Endpoint",
+      "description": "URL where the extension fetches signed blocklist updates",
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/browserdefense_extension_id/policy/blocklist_endpoint",
+      "dataType": "String",
+      "value": "https://blocklist.example.com/v1/manifest.json"
+    },
+    {
+      "name": "BrowserDefense - Organization ID",
+      "description": "Unique identifier for your organization included in forensics data",
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/browserdefense_extension_id/policy/org_id",
+      "dataType": "String",
+      "value": "your-org-id"
+    },
+    {
+      "name": "BrowserDefense - Forensics Endpoint",
+      "description": "URL where encrypted forensics data is uploaded (REQUIRED)",
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/browserdefense_extension_id/policy/forensics_endpoint",
+      "dataType": "String",
+      "value": "https://siem.example.com/api/v1/forensics"
+    },
+    {
+      "name": "BrowserDefense - IOC Salt",
+      "description": "Salt for IOC hashing - must match CLI compile salt (REQUIRED)",
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/browserdefense_extension_id/policy/ioc_salt",
+      "dataType": "String",
+      "value": "your-ioc-salt-value"
+    },
+    {
+      "name": "BrowserDefense - Update Interval",
+      "description": "How frequently to check for blocklist updates (in minutes)",
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/browserdefense_extension_id/policy/update_interval_minutes",
+      "dataType": "Integer",
+      "value": 60
+    },
+    {
+      "name": "BrowserDefense - Signing Public Key",
+      "description": "P-256 ECDSA public key in JWK format for verifying blocklist signatures (REQUIRED)",
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/browserdefense_extension_id/policy/signing_public_key",
+      "dataType": "String",
+      "value": "{\"kty\":\"EC\",\"crv\":\"P-256\",\"x\":\"YOUR_X_COORDINATE\",\"y\":\"YOUR_Y_COORDINATE\"}"
+    },
+    {
+      "name": "BrowserDefense - Encryption Public Key",
+      "description": "RSA-OAEP public key in JWK format for encrypting forensics data (REQUIRED)",
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/browserdefense_extension_id/policy/encryption_public_key",
+      "dataType": "String",
+      "value": "{\"kty\":\"RSA\",\"n\":\"YOUR_MODULUS\",\"e\":\"AQAB\"}"
+    }
+  ],
+  "assignments": {
+    "description": "Assign to device groups containing managed Windows endpoints with Chrome installed",
+    "targetGroups": [
+      {
+        "type": "groupAssignment",
+        "description": "All Windows devices with Chrome",
+        "filterType": "include"
+      }
+    ]
+  },
+  "notes": [
+    "Replace 'browserdefense_extension_id' with the actual Chrome Web Store extension ID",
+    "Replace placeholder values (YOUR_*, example.com) with your organization's values",
+    "Generate signing keys using: npx browserdefense-cli keygen --type signing",
+    "Generate encryption keys using: npx browserdefense-cli keygen --type encryption",
+    "Test with a pilot group before deploying organization-wide"
+  ]
+}

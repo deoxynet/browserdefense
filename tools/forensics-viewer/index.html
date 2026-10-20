@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrowserDefense Forensics Viewer</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --primary: #58a6ff;
+      --danger: #f85149;
+      --success: #3fb950;
+      --warning: #d29922;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .panels {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+    }
+
+    .panel-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-title .icon {
+      font-size: 18px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 12px;
+      padding: 8px;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .drop-zone {
+      border: 2px dashed var(--border);
+      border-radius: 4px;
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: var(--primary);
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .drop-zone input {
+      display: none;
+    }
+
+    .drop-zone-text {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .or-divider {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 12px;
+      margin: 8px 0;
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .status {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .status.error {
+      background: rgba(248, 81, 73, 0.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .status.success {
+      background: rgba(63, 185, 80, 0.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    .status.hidden {
+      display: none;
+    }
+
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .results-count {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .export-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .export-buttons button {
+      font-size: 13px;
+      padding: 6px 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--surface);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tr:hover td {
+      background: var(--surface);
+    }
+
+    .url-cell {
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .url-cell:hover {
+      white-space: normal;
+      word-break: break-all;
+    }
+
+    .chain-cell {
+      max-width: 200px;
+    }
+
+    .chain-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 11px;
+    }
+
+    .chain-list li {
+      padding: 2px 0;
+      color: var(--text-muted);
+    }
+
+    .chain-list li:last-child {
+      color: var(--warning);
+    }
+
+    .chain-toggle {
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px;
+      color: var(--text-muted);
+    }
+
+    .results-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: auto;
+      max-height: 600px;
+    }
+
+    .timestamp {
+      white-space: nowrap;
+      font-size: 12px;
+    }
+
+    code {
+      background: var(--bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .file-loaded {
+      color: var(--success);
+      font-size: 12px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>BrowserDefense Forensics Viewer</h1>
+    <p class="subtitle">Decrypt and analyze forensics data captured by BrowserDefense. All decryption happens locally in your browser.</p>
+
+    <div class="panels">
+      <div class="panel">
+        <div class="panel-title">
+          <span class="icon">&#128274;</span>
+          Private Key (JWK)
+        </div>
+        <div class="drop-zone" id="keyDropZone">
+          <input type="file" id="keyFileInput" accept=".json,.jwk">
+          <div class="drop-zone-text">Drop private key file here or click to browse</div>
+        </div>
+        <div class="or-divider">or paste JWK</div>
+        <textarea id="keyInput" placeholder='{"kty":"RSA","n":"...","e":"...","d":"...","p":"...","q":"...","dp":"...","dq":"...","qi":"..."}'></textarea>
+        <div class="help-text">RSA-OAEP private key in JWK format. Generated by BrowserDefense admin tools.</div>
+        <div class="file-loaded hidden" id="keyLoaded"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">
+          <span class="icon">&#128196;</span>
+          Encrypted Forensics
+        </div>
+        <div class="drop-zone" id="dataDropZone">
+          <input type="file" id="dataFileInput" accept=".json">
+          <div class="drop-zone-text">Drop forensics file here or click to browse</div>
+        </div>
+        <div class="or-divider">or paste JSON</div>
+        <textarea id="dataInput" placeholder='{"iv":"...","wrappedKey":"...","ciphertext":"..."} or array of encrypted records'></textarea>
+        <div class="help-text">Encrypted forensics data. Supports single record or array of records.</div>
+        <div class="file-loaded hidden" id="dataLoaded"></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="decryptBtn">Decrypt Forensics</button>
+      <button id="clearBtn" class="btn-secondary">Clear All</button>
+    </div>
+
+    <div id="status" class="status hidden"></div>
+
+    <div id="resultsSection" class="hidden">
+      <div class="results-header">
+        <span class="results-count" id="resultsCount">0 records</span>
+        <div class="export-buttons">
+          <button id="exportJsonBtn" class="btn-secondary">Export JSON</button>
+          <button id="exportCsvBtn" class="btn-secondary">Export CSV</button>
+        </div>
+      </div>
+      <div class="results-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Blocked URL</th>
+              <th>Normalized URL</th>
+              <th>Redirect Chain</th>
+              <th>Initiator</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody id="resultsBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="emptyState" class="empty-state">
+      <p>No decrypted records yet. Load your private key and encrypted forensics data, then click "Decrypt Forensics".</p>
+    </div>
+  </div>
+
+  <script>
+    // ============ State ============
+    let privateKeyJwk = null;
+    let encryptedData = null;
+    let decryptedRecords = [];
+
+    // ============ DOM Elements ============
+    const keyInput = document.getElementById('keyInput');
+    const dataInput = document.getElementById('dataInput');
+    const keyDropZone = document.getElementById('keyDropZone');
+    const dataDropZone = document.getElementById('dataDropZone');
+    const keyFileInput = document.getElementById('keyFileInput');
+    const dataFileInput = document.getElementById('dataFileInput');
+    const keyLoaded = document.getElementById('keyLoaded');
+    const dataLoaded = document.getElementById('dataLoaded');
+    const decryptBtn = document.getElementById('decryptBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const status = document.getElementById('status');
+    const resultsSection = document.getElementById('resultsSection');
+    const resultsCount = document.getElementById('resultsCount');
+    const resultsBody = document.getElementById('resultsBody');
+    const emptyState = document.getElementById('emptyState');
+    const exportJsonBtn = document.getElementById('exportJsonBtn');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+
+    // ============ Crypto Functions ============
+
+    /**
+     * Convert base64 string to ArrayBuffer.
+     */
+    function base64ToArrayBuffer(base64) {
+      const binary = atob(base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      return bytes.buffer;
+    }
+
+    /**
+     * Import RSA-OAEP private key from JWK.
+     */
+    async function importPrivateKey(jwk) {
+      return crypto.subtle.importKey(
+        'jwk',
+        jwk,
+        { name: 'RSA-OAEP', hash: 'SHA-256' },
+        false,
+        ['decrypt']
+      );
+    }
+
+    /**
+     * Unwrap (decrypt) an AES key with RSA-OAEP.
+     */
+    async function unwrapAESKey(wrappedKey, rsaPrivateKey) {
+      const rawKey = await crypto.subtle.decrypt(
+        { name: 'RSA-OAEP' },
+        rsaPrivateKey,
+        wrappedKey
+      );
+      return crypto.subtle.importKey(
+        'raw',
+        rawKey,
+        { name: 'AES-GCM', length: 256 },
+        false,
+        ['decrypt']
+      );
+    }
+
+    /**
+     * Decrypt forensics payload using hybrid RSA-OAEP + AES-GCM.
+     */
+    async function decryptForensics(encrypted, privateKey) {
+      // Decode base64 values
+      const iv = new Uint8Array(base64ToArrayBuffer(encrypted.iv));
+      const wrappedKey = base64ToArrayBuffer(encrypted.wrappedKey);
+      const ciphertext = base64ToArrayBuffer(encrypted.ciphertext);
+
+      // Unwrap AES key with RSA private key
+      const aesKey = await unwrapAESKey(wrappedKey, privateKey);
+
+      // Decrypt payload with AES-GCM
+      const plaintext = await crypto.subtle.decrypt(
+        { name: 'AES-GCM', iv: iv },
+        aesKey,
+        ciphertext
+      );
+
+      // Parse JSON
+      const json = new TextDecoder().decode(plaintext);
+      return JSON.parse(json);
+    }
+
+    // ============ File Handling ============
+
+    function setupDropZone(dropZone, fileInput, onLoad, loadedIndicator) {
+      dropZone.addEventListener('click', () => fileInput.click());
+
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        if (file) readFile(file, onLoad, loadedIndicator);
+      });
+
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files[0];
+        if (file) readFile(file, onLoad, loadedIndicator);
+      });
+    }
+
+    function readFile(file, onLoad, loadedIndicator) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        onLoad(e.target.result, file.name);
+        loadedIndicator.textContent = `Loaded: ${file.name}`;
+        loadedIndicator.classList.remove('hidden');
+      };
+      reader.readAsText(file);
+    }
+
+    // ============ UI Functions ============
+
+    function showStatus(message, isError = false) {
+      status.textContent = message;
+      status.className = `status ${isError ? 'error' : 'success'}`;
+    }
+
+    function hideStatus() {
+      status.className = 'status hidden';
+    }
+
+    function formatTimestamp(isoString) {
+      try {
+        const date = new Date(isoString);
+        return date.toLocaleString();
+      } catch {
+        return isoString;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    function renderRedirectChain(chain) {
+      if (!chain || chain.length === 0) {
+        return '<span style="color: var(--text-muted)">-</span>';
+      }
+
+      if (chain.length <= 2) {
+        return `<ul class="chain-list">${chain.map(url =>
+          `<li title="${escapeHtml(url)}">${escapeHtml(truncateUrl(url, 40))}</li>`
+        ).join('')}</ul>`;
+      }
+
+      const id = 'chain-' + Math.random().toString(36).substr(2, 9);
+      return `
+        <ul class="chain-list" id="${id}">
+          <li title="${escapeHtml(chain[0])}">${escapeHtml(truncateUrl(chain[0], 40))}</li>
+          <li class="chain-toggle" onclick="toggleChain('${id}', ${JSON.stringify(chain).replace(/"/g, '&quot;')})">... ${chain.length - 2} more ...</li>
+          <li title="${escapeHtml(chain[chain.length - 1])}">${escapeHtml(truncateUrl(chain[chain.length - 1], 40))}</li>
+        </ul>
+      `;
+    }
+
+    function truncateUrl(url, maxLen) {
+      if (!url || url.length <= maxLen) return url;
+      return url.substring(0, maxLen) + '...';
+    }
+
+    // Global function for chain toggle
+    window.toggleChain = function(id, chain) {
+      const el = document.getElementById(id);
+      el.innerHTML = chain.map(url =>
+        `<li title="${escapeHtml(url)}">${escapeHtml(truncateUrl(url, 40))}</li>`
+      ).join('');
+    };
+
+    function renderResults() {
+      if (decryptedRecords.length === 0) {
+        resultsSection.classList.add('hidden');
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      resultsSection.classList.remove('hidden');
+      resultsCount.textContent = `${decryptedRecords.length} record${decryptedRecords.length === 1 ? '' : 's'}`;
+
+      resultsBody.innerHTML = decryptedRecords.map(record => `
+        <tr>
+          <td class="timestamp">${escapeHtml(formatTimestamp(record.timestamp))}</td>
+          <td class="url-cell" title="${escapeHtml(record.blockedUrl)}">${escapeHtml(record.blockedUrl)}</td>
+          <td class="url-cell" title="${escapeHtml(record.normalizedUrl || '')}">${escapeHtml(record.normalizedUrl || '-')}</td>
+          <td class="chain-cell">${renderRedirectChain(record.redirectChain)}</td>
+          <td><code>${escapeHtml(record.initiator || '-')}</code></td>
+          <td><code>${escapeHtml(record.reason || '-')}</code></td>
+        </tr>
+      `).join('');
+    }
+
+    // ============ Export Functions ============
+
+    function exportToJson() {
+      const blob = new Blob([JSON.stringify(decryptedRecords, null, 2)], { type: 'application/json' });
+      downloadBlob(blob, `forensics-${new Date().toISOString().split('T')[0]}.json`);
+    }
+
+    function exportToCsv() {
+      const headers = ['Timestamp', 'Blocked URL', 'Normalized URL', 'Redirect Chain', 'Initiator', 'Reason', 'Tab ID', 'Frame ID'];
+      const rows = decryptedRecords.map(r => [
+        r.timestamp || '',
+        r.blockedUrl || '',
+        r.normalizedUrl || '',
+        (r.redirectChain || []).join(' -> '),
+        r.initiator || '',
+        r.reason || '',
+        r.tabId || '',
+        r.frameId || ''
+      ]);
+
+      const csv = [headers, ...rows]
+        .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+        .join('\n');
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      downloadBlob(blob, `forensics-${new Date().toISOString().split('T')[0]}.csv`);
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ============ Main Logic ============
+
+    async function decrypt() {
+      hideStatus();
+
+      // Get key from textarea or loaded file
+      const keyText = keyInput.value.trim();
+      if (!keyText) {
+        showStatus('Please provide a private key (paste JWK or upload file)', true);
+        return;
+      }
+
+      // Get data from textarea or loaded file
+      const dataText = dataInput.value.trim();
+      if (!dataText) {
+        showStatus('Please provide encrypted forensics data (paste JSON or upload file)', true);
+        return;
+      }
+
+      // Parse private key
+      try {
+        privateKeyJwk = JSON.parse(keyText);
+      } catch (e) {
+        showStatus('Invalid private key JSON: ' + e.message, true);
+        return;
+      }
+
+      // Validate key type
+      if (privateKeyJwk.kty !== 'RSA' || !privateKeyJwk.d) {
+        showStatus('Invalid key: must be an RSA private key (JWK with kty:"RSA" and "d" component)', true);
+        return;
+      }
+
+      // Parse encrypted data
+      try {
+        encryptedData = JSON.parse(dataText);
+      } catch (e) {
+        showStatus('Invalid forensics JSON: ' + e.message, true);
+        return;
+      }
+
+      // Normalize to array
+      let records = Array.isArray(encryptedData) ? encryptedData : [encryptedData];
+
+      // Import private key
+      let privateKey;
+      try {
+        privateKey = await importPrivateKey(privateKeyJwk);
+      } catch (e) {
+        showStatus('Failed to import private key: ' + e.message, true);
+        return;
+      }
+
+      // Decrypt each record
+      decryptedRecords = [];
+      let errors = 0;
+
+      for (let i = 0; i < records.length; i++) {
+        const record = records[i];
+
+        // Check if this is an encrypted record
+        if (!record.iv || !record.wrappedKey || !record.ciphertext) {
+          // Maybe it's already decrypted or has different structure
+          if (record.blockedUrl || record.timestamp) {
+            decryptedRecords.push(record);
+            continue;
+          }
+          errors++;
+          continue;
+        }
+
+        try {
+          const decrypted = await decryptForensics(record, privateKey);
+          decryptedRecords.push(decrypted);
+        } catch (e) {
+          console.error(`Failed to decrypt record ${i}:`, e);
+          errors++;
+        }
+      }
+
+      if (decryptedRecords.length === 0) {
+        showStatus(`Decryption failed for all ${records.length} records. Check that you have the correct private key.`, true);
+        return;
+      }
+
+      if (errors > 0) {
+        showStatus(`Decrypted ${decryptedRecords.length} records. ${errors} records failed (wrong key or corrupted data).`, false);
+      } else {
+        showStatus(`Successfully decrypted ${decryptedRecords.length} record${decryptedRecords.length === 1 ? '' : 's'}.`, false);
+      }
+
+      renderResults();
+    }
+
+    function clearAll() {
+      keyInput.value = '';
+      dataInput.value = '';
+      keyLoaded.classList.add('hidden');
+      dataLoaded.classList.add('hidden');
+      keyFileInput.value = '';
+      dataFileInput.value = '';
+      privateKeyJwk = null;
+      encryptedData = null;
+      decryptedRecords = [];
+      hideStatus();
+      renderResults();
+    }
+
+    // ============ Event Listeners ============
+
+    setupDropZone(keyDropZone, keyFileInput, (content, filename) => {
+      keyInput.value = content;
+    }, keyLoaded);
+
+    setupDropZone(dataDropZone, dataFileInput, (content, filename) => {
+      dataInput.value = content;
+    }, dataLoaded);
+
+    decryptBtn.addEventListener('click', decrypt);
+    clearBtn.addEventListener('click', clearAll);
+    exportJsonBtn.addEventListener('click', exportToJson);
+    exportCsvBtn.addEventListener('click', exportToCsv);
+
+    // Initial render
+    renderResults();
+  </script>
+</body>
+</html>

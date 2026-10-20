@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incident Review - BrowserDefense</title>
+  <link rel="stylesheet" href="incident-review.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-content">
+        <h1>Incident Review</h1>
+        <p class="subtitle">Review and label DOM kit hashes</p>
+      </div>
+      <div class="header-actions">
+        <button id="refresh-btn" class="btn btn-secondary">Refresh</button>
+      </div>
+    </header>
+
+    <!-- Status Bar -->
+    <div id="status-bar" class="status-bar hidden">
+      <span id="status-message"></span>
+      <button id="status-close" class="status-close">&times;</button>
+    </div>
+
+    <!-- Filters -->
+    <section class="filters-section">
+      <div class="filter-group">
+        <label for="filter-label">Filter by Label:</label>
+        <select id="filter-label">
+          <option value="">All</option>
+          <option value="TP">True Positive (TP)</option>
+          <option value="FP">False Positive (FP)</option>
+          <option value="UNKNOWN">Unknown</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="filter-analyst">Filter by Analyst:</label>
+        <input type="text" id="filter-analyst" placeholder="analyst@example.com">
+      </div>
+      <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
+    </section>
+
+    <!-- Stats Summary -->
+    <section class="stats-section">
+      <div class="stat-card">
+        <span class="stat-value" id="stat-total">-</span>
+        <span class="stat-label">Total Labels</span>
+      </div>
+      <div class="stat-card stat-tp">
+        <span class="stat-value" id="stat-tp">-</span>
+        <span class="stat-label">True Positives</span>
+      </div>
+      <div class="stat-card stat-fp">
+        <span class="stat-value" id="stat-fp">-</span>
+        <span class="stat-label">False Positives</span>
+      </div>
+      <div class="stat-card stat-unknown">
+        <span class="stat-value" id="stat-unknown">-</span>
+        <span class="stat-label">Unknown</span>
+      </div>
+    </section>
+
+    <!-- Manual Label Form -->
+    <section class="label-form-section">
+      <h2>Add Label</h2>
+      <form id="label-form">
+        <div class="form-group">
+          <label for="hash-input">DOM Kit Hash:</label>
+          <input type="text" id="hash-input" placeholder="sha256:abc123..." required>
+          <small>Format: sha256: followed by 64 hex characters</small>
+        </div>
+        <div class="form-group">
+          <label for="label-select">Label:</label>
+          <select id="label-select" required>
+            <option value="">Select label...</option>
+            <option value="TP">True Positive (TP)</option>
+            <option value="FP">False Positive (FP)</option>
+            <option value="UNKNOWN">Unknown</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="analyst-input">Analyst:</label>
+          <input type="text" id="analyst-input" placeholder="your@email.com">
+        </div>
+        <div class="form-group">
+          <label for="notes-input">Notes:</label>
+          <textarea id="notes-input" rows="3" placeholder="Optional notes about this classification..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Label</button>
+      </form>
+    </section>
+
+    <!-- Labels List -->
+    <section class="labels-section">
+      <h2>Labeled Hashes</h2>
+      <div id="labels-list" class="labels-list">
+        <p class="loading">Loading labels...</p>
+      </div>
+      <div id="pagination" class="pagination hidden">
+        <button id="load-more" class="btn btn-secondary">Load More</button>
+      </div>
+    </section>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state hidden">
+      <p>No labels found. Add a label using the form above.</p>
+    </div>
+  </div>
+
+  <script type="module" src="incident-review.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+# BrowserDefense Blocklist Cloudflare Worker Configuration
+# See: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "browserdefense-blocklist"
+main = "functions/blocklist.ts"
+compatibility_date = "2024-01-01"
+
+# Node.js compatibility for crypto APIs
+compatibility_flags = ["nodejs_compat"]
+
+# R2 bucket binding for blocklist storage
+[[r2_buckets]]
+binding = "BLOCKLIST_BUCKET"
+bucket_name = "browserdefense-blocklists"
+preview_bucket_name = "browserdefense-blocklists-preview"
+
+# Environment variables (set via wrangler secret)
+# UPLOAD_API_KEY - API key for authenticating PUT requests
+# SUPABASE_URL - Supabase project URL
+# SUPABASE_SERVICE_ROLE_KEY - Service role key for database writes
+
+[vars]
+# Public configuration
+CORS_ORIGIN = "*"
+
+# Development overrides
+[env.development]
+name = "browserdefense-blocklist-dev"
+
+[env.development.vars]
+CORS_ORIGIN = "http://localhost:3000"
+
+# Staging environment
+[env.staging]
+name = "browserdefense-blocklist-staging"
+
+[[env.staging.r2_buckets]]
+binding = "BLOCKLIST_BUCKET"
+bucket_name = "browserdefense-blocklists-staging"
+
+# Production environment
+[env.production]
+name = "browserdefense-blocklist"
+
+[[env.production.r2_buckets]]
+binding = "BLOCKLIST_BUCKET"
+bucket_name = "browserdefense-blocklists"

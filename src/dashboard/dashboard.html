@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - BrowserDefense</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-content">
+        <h1>BrowserDefense Dashboard</h1>
+        <p class="subtitle">Block metrics and forensics overview</p>
+      </div>
+      <div class="header-actions">
+        <span class="last-updated" id="last-updated" aria-live="polite">Last updated: --</span>
+        <button id="refresh-btn" class="btn btn-secondary" aria-label="Refresh dashboard data">Refresh</button>
+      </div>
+    </header>
+
+    <!-- Status Bar -->
+    <div id="status-bar" class="status-bar hidden" role="alert" aria-live="polite">
+      <span id="status-message"></span>
+      <button id="status-close" class="status-close" aria-label="Close status message">&times;</button>
+    </div>
+
+    <!-- Stats Cards -->
+    <section class="stats-section" aria-label="Statistics overview">
+      <div class="stat-card" role="group" aria-label="Blocks today">
+        <span class="stat-value" id="stat-blocks-today" aria-live="polite">-</span>
+        <span class="stat-label" id="label-blocks-today">Blocks Today</span>
+      </div>
+      <div class="stat-card stat-kits" role="group" aria-label="New kits seen">
+        <span class="stat-value" id="stat-new-kits" aria-live="polite">-</span>
+        <span class="stat-label" id="label-new-kits">New Kits Seen</span>
+      </div>
+      <div class="stat-card stat-pending" role="group" aria-label="Pending triage">
+        <span class="stat-value" id="stat-pending" aria-live="polite">-</span>
+        <span class="stat-label" id="label-pending">Pending Triage</span>
+      </div>
+    </section>
+
+    <!-- Recent Blocks -->
+    <section class="recent-blocks-section" aria-label="Recent blocks">
+      <div class="section-header">
+        <h2>Recent Blocks</h2>
+        <a href="#" id="view-all-link" class="view-all-link" aria-label="View all blocked URLs">View All</a>
+      </div>
+      <div id="recent-blocks-list" class="recent-blocks-list" role="log" aria-live="polite" aria-label="List of recent blocked URLs">
+        <p class="loading">Loading recent blocks...</p>
+      </div>
+    </section>
+
+    <!-- Deployment Status -->
+    <section class="deployment-section" aria-label="Deployment status">
+      <h2>Deployment Status</h2>
+      <div class="deployment-card">
+        <div class="deployment-stats">
+          <div class="deployment-stat" role="group" aria-label="Configured devices">
+            <span class="deployment-value" id="configured-count" aria-live="polite">-</span>
+            <span class="deployment-label">Configured</span>
+          </div>
+          <div class="deployment-divider" aria-hidden="true"></div>
+          <div class="deployment-stat" role="group" aria-label="Unconfigured devices">
+            <span class="deployment-value deployment-warning" id="unconfigured-count" aria-live="polite">-</span>
+            <span class="deployment-label">Unconfigured</span>
+          </div>
+        </div>
+        <div class="deployment-bar-container" role="progressbar" aria-label="Deployment progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="deployment-bar" id="deployment-bar" style="width: 0%"></div>
+        </div>
+        <p class="deployment-note" id="deployment-note" aria-live="polite">Loading deployment status...</p>
+      </div>
+    </section>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="empty-state hidden" role="status">
+      <p>No data available. Configure the extension in Options to start blocking.</p>
+      <button id="open-options" class="btn btn-primary" aria-label="Open extension options page">Open Options</button>
+    </div>
+  </div>
+
+  <script type="module" src="dashboard.js"></script>
+</body>
+</html>

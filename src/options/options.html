@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrowserDefense Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="options-container">
+    <header class="header">
+      <h1>BrowserDefense Settings</h1>
+      <p class="subtitle">Configure your IOC blocking and forensics settings</p>
+    </header>
+
+    <section class="section" id="status-section" aria-label="Configuration status">
+      <h2>Configuration Status</h2>
+      <div class="status-card" id="status-card">
+        <div class="status-indicator" id="status-indicator" role="status" aria-live="polite">
+          <span class="status-dot" id="status-dot" aria-hidden="true"></span>
+          <span class="status-text" id="status-text">Checking...</span>
+        </div>
+        <div class="config-details" id="config-details" style="display: none;">
+          <div class="detail-row">
+            <span class="detail-label">Organization</span>
+            <span class="detail-value" id="config-org-id">--</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Blocklist Endpoint</span>
+            <span class="detail-value truncate" id="config-blocklist-endpoint">--</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Forensics Endpoint</span>
+            <span class="detail-value truncate" id="config-forensics-endpoint">--</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Update Interval</span>
+            <span class="detail-value" id="config-update-interval">--</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="import-section" aria-label="Import configuration">
+      <h2>Import Configuration</h2>
+      <p class="section-description" id="import-description">
+        Import a JSON configuration file provided by your security team.
+        This file contains your organization's signing keys, endpoints, and settings.
+      </p>
+
+      <div class="import-area" id="import-area" role="region" aria-describedby="import-description">
+        <div class="drop-zone" id="drop-zone">
+          <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <p class="drop-text">Drag and drop your config file here</p>
+          <p class="drop-subtext">or</p>
+          <input type="file" id="file-input" accept=".json,application/json" hidden aria-label="Select JSON configuration file">
+          <button class="btn btn-secondary" id="btn-browse" aria-label="Browse for configuration file">Browse Files</button>
+        </div>
+      </div>
+
+      <div class="textarea-area" style="display: none;" id="textarea-area">
+        <p class="section-description" id="textarea-description">Or paste your configuration JSON below:</p>
+        <textarea
+          id="config-textarea"
+          class="config-textarea"
+          placeholder='{"org_id": "your-org", ...}'
+          spellcheck="false"
+          aria-label="Configuration JSON"
+          aria-describedby="textarea-description"
+        ></textarea>
+        <button class="btn btn-primary" id="btn-import-text" aria-label="Import configuration from pasted text">Import from Text</button>
+      </div>
+
+      <button class="btn btn-link" id="btn-toggle-textarea" aria-label="Toggle paste JSON input">Paste JSON instead</button>
+
+      <div class="error-message" id="import-error" style="display: none;" role="alert" aria-live="assertive"></div>
+      <div class="success-message" id="import-success" style="display: none;" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="section" id="demo-section" aria-label="Demo mode settings">
+      <h2>Demo Mode</h2>
+      <p class="section-description" id="demo-description">
+        Enable demo mode to test blocking with safe demo URLs.
+        Useful for recordings, sales demos, and testing.
+      </p>
+
+      <div class="demo-toggle">
+        <label class="toggle-label">
+          <input type="checkbox" id="demo-mode-toggle" aria-describedby="demo-description">
+          <span class="toggle-text">Enable demo mode</span>
+        </label>
+      </div>
+
+      <div class="demo-urls-area" id="demo-urls-area" style="display: none;">
+        <label for="demo-urls">Demo URLs (one per line)</label>
+        <textarea
+          id="demo-urls"
+          class="demo-urls-textarea"
+          placeholder="evil-phishing-site.example.com
+malware-test.example.com/login
+demo.example.com"
+          spellcheck="false"
+          aria-describedby="demo-urls-hint"
+        ></textarea>
+        <p class="hint" id="demo-urls-hint">Enter domains or full URLs that should trigger blocking in demo mode.</p>
+        <button class="btn btn-primary" id="btn-save-demo" aria-label="Save demo mode settings">Save Demo Settings</button>
+      </div>
+
+      <div class="success-message" id="demo-success" style="display: none;" role="status" aria-live="polite"></div>
+    </section>
+
+    <section class="section" id="export-section" style="display: none;" aria-label="Export configuration">
+      <h2>Export Configuration</h2>
+      <p class="section-description">
+        Download your current configuration for backup or transfer to another browser.
+      </p>
+      <button class="btn btn-secondary" id="btn-export" aria-label="Export configuration to file">Export Config</button>
+    </section>
+
+    <section class="section" id="danger-section" style="display: none;" aria-label="Danger zone">
+      <h2>Danger Zone</h2>
+      <p class="section-description" id="danger-description">
+        Clear your configuration to reset the extension. This will stop IOC blocking until a new configuration is imported.
+      </p>
+      <button class="btn btn-danger" id="btn-clear" aria-label="Clear all configuration data" aria-describedby="danger-description">Clear Configuration</button>
+    </section>
+
+    <footer class="footer">
+      <p>BrowserDefense v<span id="version">0.0.0</span></p>
+    </footer>
+  </div>
+
+  <script src="options.js" type="module"></script>
+</body>
+</html>

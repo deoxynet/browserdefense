@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - BrowserDefense</title>
+  <meta name="description" content="Manage your BrowserDefense instance - view account status, blocklist, and forensics.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased">
+  <!-- Navigation -->
+  <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-slate-200 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-2">
+          <a href="index.html" class="flex items-center space-x-2">
+            <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            <span class="font-bold text-xl">BrowserDefense</span>
+          </a>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span class="text-sm text-slate-600">Acme Corp</span>
+          <button id="logout-btn" class="text-slate-600 hover:text-slate-900 transition text-sm">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="pt-16 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Page Header -->
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-slate-900">Dashboard</h1>
+        <p class="text-slate-600">Manage your BrowserDefense instance</p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Organization ID -->
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-slate-500">Organization ID</span>
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <p class="text-lg font-mono text-slate-900" id="org-id">org_acme_abc123</p>
+        </div>
+
+        <!-- Blocklist Count -->
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-slate-500">Blocklist IOCs</span>
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <p class="text-3xl font-bold text-slate-900" id="blocklist-count">2,847</p>
+          <p class="text-sm text-slate-500 mt-1">of 10,000 limit</p>
+        </div>
+
+        <!-- Last Update -->
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-slate-500">Last Blocklist Update</span>
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <p class="text-lg font-semibold text-slate-900" id="last-update">2 hours ago</p>
+          <p class="text-sm text-slate-500 mt-1">Jan 9, 2026 10:34 AM</p>
+        </div>
+
+        <!-- Forensics Upload Count -->
+        <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-slate-500">Forensics Uploads</span>
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <p class="text-3xl font-bold text-slate-900" id="forensics-count">156</p>
+          <p class="text-sm text-slate-500 mt-1">Last 30 days</p>
+        </div>
+      </div>
+
+      <!-- Main Content Grid -->
+      <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Left Column: Recent Activity -->
+        <div class="lg:col-span-2 space-y-6">
+          <!-- Recent Blocks -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-6 py-4 border-b border-slate-200">
+              <h2 class="text-lg font-semibold text-slate-900">Recent Blocks</h2>
+            </div>
+            <div class="divide-y divide-slate-100">
+              <div class="px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                  <div>
+                    <p class="text-sm font-medium text-slate-900">malicious-login[.]com/verify</p>
+                    <p class="text-xs text-slate-500">Blocked 15 minutes ago</p>
+                  </div>
+                </div>
+                <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">Phishing</span>
+              </div>
+              <div class="px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                  <div>
+                    <p class="text-sm font-medium text-slate-900">secure-update[.]net/download</p>
+                    <p class="text-xs text-slate-500">Blocked 2 hours ago</p>
+                  </div>
+                </div>
+                <span class="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">Malware</span>
+              </div>
+              <div class="px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                  <div>
+                    <p class="text-sm font-medium text-slate-900">invoice-payment[.]xyz/doc</p>
+                    <p class="text-xs text-slate-500">Blocked 5 hours ago</p>
+                  </div>
+                </div>
+                <span class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">Phishing</span>
+              </div>
+            </div>
+            <div class="px-6 py-4 border-t border-slate-200">
+              <a href="#" class="text-sm text-primary-600 hover:text-primary-700 font-medium">View all blocks</a>
+            </div>
+          </div>
+
+          <!-- Extension Status -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-6 py-4 border-b border-slate-200">
+              <h2 class="text-lg font-semibold text-slate-900">Extension Status</h2>
+            </div>
+            <div class="p-6">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="font-medium text-slate-900">Active</p>
+                    <p class="text-sm text-slate-500">Blocklist synced and up to date</p>
+                  </div>
+                </div>
+                <span class="text-sm text-slate-500">v1.2.0</span>
+              </div>
+              <div class="bg-slate-50 rounded-lg p-4">
+                <p class="text-sm text-slate-600">
+                  <strong>Deployed to:</strong> 47 endpoints via Chrome Enterprise
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: API Keys & Settings -->
+        <div class="space-y-6">
+          <!-- API Keys -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+              <h2 class="text-lg font-semibold text-slate-900">API Keys</h2>
+              <button id="create-key-btn" class="text-sm text-primary-600 hover:text-primary-700 font-medium">Create new</button>
+            </div>
+            <div class="divide-y divide-slate-100">
+              <div class="px-6 py-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-slate-900">Production</span>
+                  <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Active</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <code class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-mono flex-1 truncate">test_key_abc123...xyz789</code>
+                  <button class="text-slate-400 hover:text-slate-600" title="Copy">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                  </button>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">Created Dec 15, 2025</p>
+              </div>
+              <div class="px-6 py-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-slate-900">Test</span>
+                  <span class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded">Test mode</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <code class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-mono flex-1 truncate">test_key_def456...uvw012</code>
+                  <button class="text-slate-400 hover:text-slate-600" title="Copy">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                  </button>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">Created Jan 5, 2026</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-6 py-4 border-b border-slate-200">
+              <h2 class="text-lg font-semibold text-slate-900">Quick Actions</h2>
+            </div>
+            <div class="p-4 space-y-2">
+              <button class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-50 transition flex items-center space-x-3">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span class="text-sm text-slate-700">Add IOC manually</span>
+              </button>
+              <button class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-50 transition flex items-center space-x-3">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                </svg>
+                <span class="text-sm text-slate-700">Import IOCs from CSV</span>
+              </button>
+              <button class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-50 transition flex items-center space-x-3">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                <span class="text-sm text-slate-700">Download extension config</span>
+              </button>
+              <button class="w-full text-left px-4 py-3 rounded-lg hover:bg-slate-50 transition flex items-center space-x-3">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span class="text-sm text-slate-700">Account settings</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Plan Info -->
+          <div class="bg-primary-50 rounded-xl border border-primary-200 p-6">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-sm font-medium text-primary-900">Team Plan</span>
+              <span class="text-xs bg-primary-200 text-primary-800 px-2 py-1 rounded">Active</span>
+            </div>
+            <p class="text-sm text-primary-700 mb-4">Your plan renews on Feb 15, 2026</p>
+            <a href="#" class="text-sm text-primary-600 hover:text-primary-700 font-medium">Manage billing</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module">
+    // Placeholder: In production, this would fetch real data from the API
+    console.log('Dashboard loaded - demo mode');
+
+    // Handle logout
+    document.getElementById('logout-btn')?.addEventListener('click', () => {
+      // In production: clear session, redirect to login
+      window.location.href = 'index.html';
+    });
+
+    // Handle create key button
+    document.getElementById('create-key-btn')?.addEventListener('click', () => {
+      alert('API key creation is not yet implemented. Contact support@browserdefense.com');
+    });
+
+    // Copy buttons
+    document.querySelectorAll('button[title="Copy"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const code = btn.previousElementSibling?.textContent;
+        if (code) {
+          navigator.clipboard.writeText(code).then(() => {
+            btn.innerHTML = '<svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+            setTimeout(() => {
+              btn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>';
+            }, 2000);
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

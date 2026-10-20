@@ -1,0 +1,18 @@
+[extend]
+useDefault = true
+
+# Exact synthetic fixtures and TypeScript type names reviewed during publication.
+# No paths are excluded: real credentials in tests must still fail the scan.
+[[allowlists]]
+regexTarget = "secret"
+regexes = [
+  '''^(?:X25519PrivateKeyJWK|Ed25519PrivateKeyJWK)$''',
+  '''^test-api-key-12345$''',
+  '''^test_key_123456789$''',
+  '''^abcdefghij0123456789$''',
+  '''^dGVzdC1zaGFyZWQta2V5LWZvci1zZW50aW5lbA==$''',
+  '''^eyJhbGciOiJIUzI1NiJ9\.eyJzdWIiOiIxMjM0NTY3ODkwIn0\.signature$''',
+  '''^eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.eyJzdWIiOiIxMjM0NTY3ODkwIn0\.test-signature$''',
+  '''^(?:test_key_|api-key-)abcdef1234567890abcdef(?:1234567890|12)$''',
+  '''^short-key-123$''',
+]

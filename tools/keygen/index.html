@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BrowserDefense Key Generator</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --surface: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --primary: #58a6ff;
+      --danger: #f85149;
+      --success: #3fb950;
+      --warning: #d29922;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .warning-banner {
+      background: rgba(210, 153, 34, 0.1);
+      border: 1px solid var(--warning);
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .warning-banner strong {
+      color: var(--warning);
+    }
+
+    .generate-section {
+      text-align: center;
+      padding: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 24px;
+    }
+
+    .generate-section p {
+      color: var(--text-muted);
+      margin: 0 0 16px;
+      font-size: 14px;
+    }
+
+    .algorithm-toggle {
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .algorithm-toggle label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .algorithm-toggle input[type="radio"] {
+      accent-color: var(--primary);
+    }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      padding: 8px 14px;
+    }
+
+    .btn-success {
+      background: var(--success);
+    }
+
+    .btn-download {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      padding: 8px 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .results {
+      display: none;
+    }
+
+    .results.visible {
+      display: block;
+    }
+
+    .key-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .key-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .key-title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .key-title .icon {
+      font-size: 18px;
+    }
+
+    .key-badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 500;
+    }
+
+    .badge-public {
+      background: rgba(63, 185, 80, 0.2);
+      color: var(--success);
+    }
+
+    .badge-private {
+      background: rgba(248, 81, 73, 0.2);
+      color: var(--danger);
+    }
+
+    .key-description {
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .key-actions {
+      padding: 12px 16px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .key-preview {
+      padding: 12px 16px;
+      background: var(--bg);
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 11px;
+      max-height: 150px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .config-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin-bottom: 24px;
+    }
+
+    .config-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .config-body {
+      padding: 16px;
+    }
+
+    .config-preview {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      font-size: 12px;
+      max-height: 250px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-bottom: 12px;
+    }
+
+    .storage-tips {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      margin-top: 24px;
+    }
+
+    .storage-tips h3 {
+      margin: 0 0 12px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .storage-tips ul {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .storage-tips li {
+      margin-bottom: 8px;
+    }
+
+    .storage-tips code {
+      background: var(--bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .status {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .status.visible {
+      display: block;
+    }
+
+    .status.success {
+      background: rgba(63, 185, 80, 0.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    .status.error {
+      background: rgba(248, 81, 73, 0.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .algorithm-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg);
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    /* Form inputs for org config */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-group input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .form-group .help-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .export-section {
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+
+    .export-section h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .export-section p {
+      margin: 0 0 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .export-buttons {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .file-list {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 12px;
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+
+    .file-list div {
+      padding: 4px 0;
+      color: var(--text-muted);
+    }
+
+    .file-list div::before {
+      content: "├── ";
+      color: var(--border);
+    }
+
+    .file-list div:last-child::before {
+      content: "└── ";
+    }
+
+    .info-banner {
+      background: rgba(88, 166, 255, 0.1);
+      border: 1px solid var(--primary);
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+
+    .info-banner strong {
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>BrowserDefense Key Generator</h1>
+    <p class="subtitle">Generate cryptographic keys for BYO-Trust blocklist signing and forensics encryption. All key generation happens locally in your browser.</p>
+
+    <div class="warning-banner">
+      <strong>Security Notice:</strong> Your private keys are generated locally and never leave your browser. Store them securely (1Password, Vault, etc.). BrowserDefense cannot recover lost keys.
+    </div>
+
+    <div class="generate-section">
+      <p>Click below to generate a complete key set for your organization.</p>
+
+      <div class="algorithm-toggle">
+        <span style="color: var(--text-muted)">Signing Algorithm:</span>
+        <label>
+          <input type="radio" name="algorithm" value="ed25519" checked>
+          Ed25519 (Recommended)
+        </label>
+        <label>
+          <input type="radio" name="algorithm" value="p256">
+          P-256 ECDSA (Legacy)
+        </label>
+      </div>
+
+      <button id="generateBtn" class="btn-success">Generate All Keys</button>
+    </div>
+
+    <div id="status" class="status"></div>
+
+    <div id="results" class="results">
+      <div class="section-title">
+        Signing Keys
+        <span class="algorithm-note" id="signingAlgorithmNote">Ed25519</span>
+      </div>
+
+      <div class="key-section">
+        <div class="key-header">
+          <div class="key-title">
+            <span class="icon">&#128275;</span>
+            Signing Public Key
+          </div>
+          <span class="key-badge badge-public">DISTRIBUTE</span>
+        </div>
+        <div class="key-description">
+          Embed this key in your extension configuration (GPO/MDM). Extensions use it to verify blocklist signatures.
+        </div>
+        <div class="key-actions">
+          <button class="btn-download" onclick="downloadKey('signingPublic', 'signing-public.jwk')">
+            Download signing-public.jwk
+          </button>
+          <button class="btn-secondary" onclick="copyToClipboard('signingPublic')">Copy JWK</button>
+        </div>
+        <div class="key-preview" id="signingPublicPreview"></div>
+      </div>
+
+      <div class="key-section">
+        <div class="key-header">
+          <div class="key-title">
+            <span class="icon">&#128274;</span>
+            Signing Private Key
+          </div>
+          <span class="key-badge badge-private">KEEP SECRET</span>
+        </div>
+        <div class="key-description">
+          Use this key in your CI/CD pipeline to sign blocklist updates. Never share or expose this key.
+        </div>
+        <div class="key-actions">
+          <button class="btn-download" onclick="downloadKey('signingPrivate', 'signing-private.jwk')">
+            Download signing-private.jwk
+          </button>
+          <button class="btn-secondary" onclick="copyToClipboard('signingPrivate')">Copy JWK</button>
+        </div>
+        <div class="key-preview" id="signingPrivatePreview"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title">
+        Encryption Keys
+        <span class="algorithm-note">RSA-OAEP 2048-bit (SHA-256)</span>
+      </div>
+
+      <div class="key-section">
+        <div class="key-header">
+          <div class="key-title">
+            <span class="icon">&#128275;</span>
+            Encryption Public Key
+          </div>
+          <span class="key-badge badge-public">DISTRIBUTE</span>
+        </div>
+        <div class="key-description">
+          Embed this key in your extension configuration. Extensions use it to encrypt forensics data before upload.
+        </div>
+        <div class="key-actions">
+          <button class="btn-download" onclick="downloadKey('encryptionPublic', 'encryption-public.jwk')">
+            Download encryption-public.jwk
+          </button>
+          <button class="btn-secondary" onclick="copyToClipboard('encryptionPublic')">Copy JWK</button>
+        </div>
+        <div class="key-preview" id="encryptionPublicPreview"></div>
+      </div>
+
+      <div class="key-section">
+        <div class="key-header">
+          <div class="key-title">
+            <span class="icon">&#128274;</span>
+            Encryption Private Key
+          </div>
+          <span class="key-badge badge-private">KEEP SECRET</span>
+        </div>
+        <div class="key-description">
+          Use this key to decrypt forensics data in the Forensics Viewer. Never share or expose this key.
+        </div>
+        <div class="key-actions">
+          <button class="btn-download" onclick="downloadKey('encryptionPrivate', 'encryption-private.jwk')">
+            Download encryption-private.jwk
+          </button>
+          <button class="btn-secondary" onclick="copyToClipboard('encryptionPrivate')">Copy JWK</button>
+        </div>
+        <div class="key-preview" id="encryptionPrivatePreview"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title">
+        Extension Configuration
+      </div>
+
+      <div class="config-section">
+        <div class="config-header">
+          <span class="icon">&#9881;</span>
+          GPO/MDM Configuration
+        </div>
+        <div class="config-body">
+          <div class="config-preview" id="configPreview"></div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-download" onclick="downloadConfig()">
+              Download browserdefense-config.json
+            </button>
+            <button class="btn-secondary" onclick="copyConfig()">Copy Config</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="section-title">
+        Enterprise Deployment (ADMX)
+      </div>
+
+      <div class="config-section">
+        <div class="config-header">
+          <span class="icon">&#128736;</span>
+          Organization Configuration
+        </div>
+        <div class="config-body">
+          <p style="font-size: 13px; color: var(--text-muted); margin: 0 0 16px;">
+            Configure your deployment settings below. These will be embedded in the exported ADMX package.
+          </p>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="orgName">Organization Name</label>
+              <input type="text" id="orgName" placeholder="Acme Corp" />
+              <div class="help-text">Used in policy descriptions</div>
+            </div>
+            <div class="form-group">
+              <label for="extensionId">Extension ID</label>
+              <input type="text" id="extensionId" placeholder="abcdefghijklmnopqrstuvwxyzabcdef" />
+              <div class="help-text">32-char Chrome Web Store ID</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="blocklistEndpoint">Blocklist Endpoint URL</label>
+            <input type="url" id="blocklistEndpoint" placeholder="https://blocklist.example.com/v1/manifest.json" />
+            <div class="help-text">URL where signed blocklist updates are fetched</div>
+          </div>
+
+          <div class="form-group">
+            <label for="forensicsEndpoint">Forensics Upload Endpoint URL (optional)</label>
+            <input type="url" id="forensicsEndpoint" placeholder="https://siem.example.com/api/v1/forensics" />
+            <div class="help-text">URL where encrypted forensics data is uploaded</div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="updateInterval">Update Interval (minutes)</label>
+              <input type="number" id="updateInterval" value="60" min="5" max="1440" />
+              <div class="help-text">5-1440 minutes (default: 60)</div>
+            </div>
+            <div class="form-group">
+              <label for="updateUrl">Extension Update URL</label>
+              <input type="url" id="updateUrl" value="https://clients2.google.com/service/update2/crx" />
+              <div class="help-text">Chrome Web Store or self-hosted</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="export-section">
+        <h3>Export for Windows (GPO / Intune)</h3>
+        <p>
+          Download ready-to-deploy configuration with your organization's keys and endpoints pre-configured.
+        </p>
+        <div class="export-buttons">
+          <button id="exportAdmxBtn" class="btn-primary" onclick="exportAdmxPackage()">
+            Export ADMX Package (.zip)
+          </button>
+          <button class="btn-secondary" onclick="exportRegistryFile()">
+            Export Registry File (.reg)
+          </button>
+          <button class="btn-secondary" onclick="exportIntuneJson()">
+            Export Intune Config (.json)
+          </button>
+        </div>
+        <div class="file-list" id="exportFileList" style="display: none;">
+          <div>BrowserDefense.admx</div>
+          <div>en-US/BrowserDefense.adml</div>
+          <div>BrowserDefense-Config.reg</div>
+          <div>README.txt</div>
+        </div>
+      </div>
+
+      <div class="export-section" style="background: rgba(63, 185, 80, 0.1); border-color: var(--success);">
+        <h3 style="color: var(--success);">Export for macOS (Jamf / Kandji / Mosyle)</h3>
+        <p>
+          Download a configuration profile for Apple MDM deployment. Works with Jamf Pro, Kandji, Mosyle, Workspace ONE, and other MDM solutions.
+        </p>
+        <div class="export-buttons">
+          <button class="btn-success" onclick="exportMobileconfig()">
+            Export Apple MDM (.mobileconfig)
+          </button>
+          <button class="btn-secondary" onclick="exportMobileconfigUnsigned()">
+            Export Unsigned Profile
+          </button>
+        </div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">
+          <strong>Note:</strong> For production deployment, sign the profile with your organization's Apple Developer certificate or deploy via MDM (which signs automatically).
+        </div>
+      </div>
+
+      <div class="storage-tips">
+        <h3>Key Storage Best Practices</h3>
+        <ul>
+          <li><strong>Private keys</strong> (<code>signing-private.jwk</code>, <code>encryption-private.jwk</code>): Store in 1Password, HashiCorp Vault, AWS Secrets Manager, or similar secure storage.</li>
+          <li><strong>Signing private key</strong>: Only needed in your CI/CD pipeline when signing blocklist updates.</li>
+          <li><strong>Encryption private key</strong>: Only needed when viewing forensics data in the Forensics Viewer.</li>
+          <li><strong>Public keys</strong>: Can be safely distributed in extension configuration files.</li>
+          <li><strong>Backup</strong>: Store encrypted backups of private keys. Lost keys cannot be recovered.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============ State ============
+    let generatedKeys = {
+      signingPublic: null,
+      signingPrivate: null,
+      encryptionPublic: null,
+      encryptionPrivate: null,
+      salt: null,
+      orgId: null,
+      config: null,
+      algorithmVersion: null
+    };
+
+    // ============ DOM Elements ============
+    const generateBtn = document.getElementById('generateBtn');
+    const results = document.getElementById('results');
+    const status = document.getElementById('status');
+
+    // ============ Crypto Functions ============
+
+    /**
+     * Check if Ed25519 is supported in this browser.
+     */
+    async function isEd25519Supported() {
+      try {
+        await crypto.subtle.generateKey('Ed25519', false, ['sign', 'verify']);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    /**
+     * Generate Ed25519 keypair for blocklist signing.
+     */
+    async function generateSigningKeypairEd25519() {
+      const keypair = await crypto.subtle.generateKey(
+        'Ed25519',
+        true,  // extractable
+        ['sign', 'verify']
+      );
+
+      const publicKey = await crypto.subtle.exportKey('jwk', keypair.publicKey);
+      const privateKey = await crypto.subtle.exportKey('jwk', keypair.privateKey);
+
+      return { publicKey, privateKey };
+    }
+
+    /**
+     * Generate P-256 ECDSA keypair for blocklist signing (legacy).
+     */
+    async function generateSigningKeypairP256() {
+      const keypair = await crypto.subtle.generateKey(
+        { name: 'ECDSA', namedCurve: 'P-256' },
+        true,  // extractable
+        ['sign', 'verify']
+      );
+
+      const publicKey = await crypto.subtle.exportKey('jwk', keypair.publicKey);
+      const privateKey = await crypto.subtle.exportKey('jwk', keypair.privateKey);
+
+      return { publicKey, privateKey };
+    }
+
+    /**
+     * Generate RSA-OAEP keypair for forensics encryption.
+     */
+    async function generateEncryptionKeypair() {
+      const keypair = await crypto.subtle.generateKey(
+        {
+          name: 'RSA-OAEP',
+          modulusLength: 2048,
+          publicExponent: new Uint8Array([1, 0, 1]),
+          hash: 'SHA-256'
+        },
+        true,  // extractable
+        ['encrypt', 'decrypt']
+      );
+
+      const publicKey = await crypto.subtle.exportKey('jwk', keypair.publicKey);
+      const privateKey = await crypto.subtle.exportKey('jwk', keypair.privateKey);
+
+      return { publicKey, privateKey };
+    }
+
+    /**
+     * Generate random salt for IOC hashing.
+     */
+    function generateSalt() {
+      const saltBytes = crypto.getRandomValues(new Uint8Array(32));
+      return btoa(String.fromCharCode(...saltBytes));
+    }
+
+    /**
+     * Generate a random UUID for org_id.
+     */
+    function generateOrgId() {
+      return crypto.randomUUID();
+    }
+
+    // ============ UI Functions ============
+
+    function showStatus(message, isError = false) {
+      status.textContent = message;
+      status.className = `status visible ${isError ? 'error' : 'success'}`;
+    }
+
+    function hideStatus() {
+      status.className = 'status';
+    }
+
+    function formatJson(obj) {
+      return JSON.stringify(obj, null, 2);
+    }
+
+    function updatePreviews() {
+      document.getElementById('signingPublicPreview').textContent = formatJson(generatedKeys.signingPublic);
+      document.getElementById('signingPrivatePreview').textContent = formatJson(generatedKeys.signingPrivate);
+      document.getElementById('encryptionPublicPreview').textContent = formatJson(generatedKeys.encryptionPublic);
+      document.getElementById('encryptionPrivatePreview').textContent = formatJson(generatedKeys.encryptionPrivate);
+      document.getElementById('configPreview').textContent = formatJson(generatedKeys.config);
+
+      // Update algorithm note
+      const noteEl = document.getElementById('signingAlgorithmNote');
+      if (generatedKeys.algorithmVersion === 'ed25519-v2') {
+        noteEl.textContent = 'Ed25519';
+      } else {
+        noteEl.textContent = 'P-256 ECDSA (SHA-256)';
+      }
+    }
+
+    // ============ Download/Copy Functions ============
+
+    function downloadKey(keyName, filename) {
+      const key = generatedKeys[keyName];
+      if (!key) return;
+
+      const blob = new Blob([JSON.stringify(key, null, 2)], { type: 'application/json' });
+      downloadBlob(blob, filename);
+    }
+
+    function downloadConfig() {
+      if (!generatedKeys.config) return;
+
+      const blob = new Blob([JSON.stringify(generatedKeys.config, null, 2)], { type: 'application/json' });
+      downloadBlob(blob, 'browserdefense-config.json');
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    async function copyToClipboard(keyName) {
+      const key = generatedKeys[keyName];
+      if (!key) return;
+
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(key, null, 2));
+        showStatus('Copied to clipboard!');
+        setTimeout(hideStatus, 2000);
+      } catch (e) {
+        showStatus('Failed to copy: ' + e.message, true);
+      }
+    }
+
+    async function copyConfig() {
+      if (!generatedKeys.config) return;
+
+      try {
+        await navigator.clipboard.writeText(JSON.stringify(generatedKeys.config, null, 2));
+        showStatus('Copied to clipboard!');
+        setTimeout(hideStatus, 2000);
+      } catch (e) {
+        showStatus('Failed to copy: ' + e.message, true);
+      }
+    }
+
+    // ============ ADMX/ADML Generation ============
+
+    /**
+     * Get org config from form inputs
+     */
+    function getOrgConfig() {
+      return {
+        orgName: document.getElementById('orgName').value.trim() || 'Your Organization',
+        extensionId: document.getElementById('extensionId').value.trim() || 'browserdefense_extension_id',
+        blocklistEndpoint: document.getElementById('blocklistEndpoint').value.trim() || '',
+        forensicsEndpoint: document.getElementById('forensicsEndpoint').value.trim() || '',
+        updateInterval: parseInt(document.getElementById('updateInterval').value) || 60,
+        updateUrl: document.getElementById('updateUrl').value.trim() || 'https://clients2.google.com/service/update2/crx'
+      };
+    }
+
+    /**
+     * Escape string for XML attribute/content
+     */
+    function escapeXml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+    }
+
+    /**
+     * Escape JSON for registry string value
+     */
+    function escapeRegValue(str) {
+      return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    }
+
+    /**
+     * Generate ADMX file content with extension ID filled in
+     */
+    function generateAdmx(config) {
+      return `<?xml version="1.0" encoding="utf-8"?>
+<!--
+  BrowserDefense - ADMX Administrative Template for Group Policy
+  Organization: ${escapeXml(config.orgName)}
+  Generated: ${new Date().toISOString()}
+
+  This template defines enterprise configuration settings for the BrowserDefense
+  Chrome extension. Deploy via Group Policy Management Console (GPMC).
+
+  Registry Path: HKLM\\SOFTWARE\\Policies\\Google\\Chrome\\3rdparty\\extensions\\${escapeXml(config.extensionId)}\\policy
+-->
+<policyDefinitions xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   revision="1.0"
+                   schemaVersion="1.0"
+                   xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions">
+
+  <policyNamespaces>
+    <target prefix="browserdefense" namespace="BrowserDefense.Policies.${escapeXml(config.extensionId)}" />
+    <using prefix="chrome" namespace="Google.Policies.Chrome" />
+  </policyNamespaces>
+
+  <resources minRequiredRevision="1.0" />
+
+  <supportedOn>
+    <definitions>
+      <definition name="SUPPORTED_WIN7" displayName="$(string.SUPPORTED_WIN7)"/>
+    </definitions>
+  </supportedOn>
+
+  <categories>
+    <category name="BrowserDefense" displayName="$(string.BrowserDefense_Category)">
+      <parentCategory ref="chrome:Cat_Google" />
+    </category>
+    <category name="BrowserDefense_Settings" displayName="$(string.BrowserDefense_Settings_Category)">
+      <parentCategory ref="BrowserDefense" />
+    </category>
+    <category name="BrowserDefense_Security" displayName="$(string.BrowserDefense_Security_Category)">
+      <parentCategory ref="BrowserDefense" />
+    </category>
+  </categories>
+
+  <policies>
+    <!-- Blocklist Endpoint URL -->
+    <policy name="BlocklistEndpoint"
+            class="Machine"
+            displayName="$(string.BlocklistEndpoint_DisplayName)"
+            explainText="$(string.BlocklistEndpoint_ExplainText)"
+            key="SOFTWARE\\Policies\\Google\\Chrome\\3rdparty\\extensions\\${escapeXml(config.extensionId)}\\policy"
+            valueName="blocklist_endpoint">
+      <parentCategory ref="BrowserDefense_Settings" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="BlocklistEndpoint_Value" valueName="blocklist_endpoint" required="true" />
+      </elements>
+    </policy>
+
+    <!-- Organization ID -->
+    <policy name="OrganizationId"
+            class="Machine"
+            displayName="$(string.OrganizationId_DisplayName)"
+            explainText="$(string.OrganizationId_ExplainText)"
+            key="SOFTWARE\\Policies\\Google\\Chrome\\3rdparty\\extensions\\${escapeXml(config.extensionId)}\\policy"
+            valueName="org_id">
+      <parentCategory ref="BrowserDefense_Settings" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="OrganizationId_Value" valueName="org_id" required="true" />
+      </elements>
+    </policy>
+
+    <!-- Forensics Endpoint URL -->
+    <policy name="ForensicsEndpoint"
+            class="Machine"
+            displayName="$(string.ForensicsEndpoint_DisplayName)"
+            explainText="$(string.ForensicsEndpoint_ExplainText)"
+            key="SOFTWARE\\Policies\\Google\\Chrome\\3rdparty\\extensions\\${escapeXml(config.extensionId)}\\policy"
+            valueName="forensics_endpoint">
+      <parentCategory ref="BrowserDefense_Settings" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="ForensicsEndpoint_Value" valueName="forensics_endpoint" required="false" />
+      </elements>
+    </policy>
+
+    <!-- Update Interval (minutes) -->
+    <policy name="UpdateInterval"
+            class="Machine"
+            displayName="$(string.UpdateInterval_DisplayName)"
+            explainText="$(string.UpdateInterval_ExplainText)"
+            key="SOFTWARE\\Policies\\Google\\Chrome\\3rdparty\\extensions\\${escapeXml(config.extensionId)}\\policy"
+            valueName="update_interval_minutes">
+      <parentCategory ref="BrowserDefense_Settings" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <decimal id="UpdateInterval_Value" valueName="update_interval_minutes" minValue="5" maxValue="1440" />
+      </elements>
+    </policy>
+
+    <!-- Signing Public Key (JWK) -->
+    <policy name="SigningPublicKey"
+            class="Machine"
+            displayName="$(string.SigningPublicKey_DisplayName)"
+            explainText="$(string.SigningPublicKey_ExplainText)"
+            key="SOFTWARE\\Policies\\Google\\Chrome\\3rdparty\\extensions\\${escapeXml(config.extensionId)}\\policy"
+            valueName="signing_public_key">
+      <parentCategory ref="BrowserDefense_Security" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="SigningPublicKey_Value" valueName="signing_public_key" required="true" maxLength="2048" />
+      </elements>
+    </policy>
+
+    <!-- Forensics Encryption Public Key (JWK) -->
+    <policy name="ForensicsPublicKey"
+            class="Machine"
+            displayName="$(string.ForensicsPublicKey_DisplayName)"
+            explainText="$(string.ForensicsPublicKey_ExplainText)"
+            key="SOFTWARE\\Policies\\Google\\Chrome\\3rdparty\\extensions\\${escapeXml(config.extensionId)}\\policy"
+            valueName="forensics_public_key">
+      <parentCategory ref="BrowserDefense_Security" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <elements>
+        <text id="ForensicsPublicKey_Value" valueName="forensics_public_key" required="false" maxLength="4096" />
+      </elements>
+    </policy>
+
+    <!-- Enable Debug Logging -->
+    <policy name="EnableDebugLogging"
+            class="Machine"
+            displayName="$(string.EnableDebugLogging_DisplayName)"
+            explainText="$(string.EnableDebugLogging_ExplainText)"
+            key="SOFTWARE\\Policies\\Google\\Chrome\\3rdparty\\extensions\\${escapeXml(config.extensionId)}\\policy"
+            valueName="enable_debug_logging">
+      <parentCategory ref="BrowserDefense_Settings" />
+      <supportedOn ref="SUPPORTED_WIN7" />
+      <enabledValue>
+        <decimal value="1" />
+      </enabledValue>
+      <disabledValue>
+        <decimal value="0" />
+      </disabledValue>
+    </policy>
+
+  </policies>
+</policyDefinitions>
+`;
+    }
+
+    /**
+     * Generate ADML file content with org-specific descriptions
+     */
+    function generateAdml(config) {
+      const signingKeyPreview = generatedKeys.signingPublic
+        ? JSON.stringify(generatedKeys.signingPublic).substring(0, 60) + '...'
+        : '(generate keys first)';
+
+      return `<?xml version="1.0" encoding="utf-8"?>
+<!--
+  BrowserDefense - ADML Language Resource File (English - United States)
+  Organization: ${escapeXml(config.orgName)}
+  Generated: ${new Date().toISOString()}
+
+  This file contains localized strings for the BrowserDefense ADMX template.
+  Place in the appropriate language folder (e.g., en-US) in the PolicyDefinitions directory.
+-->
+<policyDefinitionResources xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           revision="1.0"
+                           schemaVersion="1.0"
+                           xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions">
+  <displayName>BrowserDefense Policy Definitions - ${escapeXml(config.orgName)}</displayName>
+  <description>Administrative template for managing BrowserDefense Chrome extension settings for ${escapeXml(config.orgName)}.</description>
+
+  <resources>
+    <stringTable>
+      <!-- Supported On -->
+      <string id="SUPPORTED_WIN7">Windows 7 and later</string>
+
+      <!-- Categories -->
+      <string id="BrowserDefense_Category">BrowserDefense (${escapeXml(config.orgName)})</string>
+      <string id="BrowserDefense_Settings_Category">Settings</string>
+      <string id="BrowserDefense_Security_Category">Security</string>
+
+      <!-- Blocklist Endpoint -->
+      <string id="BlocklistEndpoint_DisplayName">Blocklist Endpoint URL</string>
+      <string id="BlocklistEndpoint_ExplainText">Specifies the URL where the extension fetches signed blocklist updates.
+
+Pre-configured value for ${escapeXml(config.orgName)}:
+${escapeXml(config.blocklistEndpoint || '(not configured)')}
+
+This URL must serve a JSON manifest containing:
+- version: Monotonically increasing version number
+- timestamp: ISO 8601 timestamp
+- type: "full" or "delta"
+- hashes: Array of SHA-256 hashes (hex encoded)
+- signature: P-256 ECDSA signature (base64 encoded)
+
+If not configured, the extension will use its built-in default endpoint.</string>
+
+      <!-- Organization ID -->
+      <string id="OrganizationId_DisplayName">Organization ID</string>
+      <string id="OrganizationId_ExplainText">Specifies a unique identifier for your organization.
+
+Pre-configured value: ${escapeXml(generatedKeys.orgId || '(generate keys first)')}
+
+This ID is included in forensics uploads to help identify which organization generated the alert.
+
+If not configured, forensics data will not include organization identification.</string>
+
+      <!-- Forensics Endpoint -->
+      <string id="ForensicsEndpoint_DisplayName">Forensics Upload Endpoint URL</string>
+      <string id="ForensicsEndpoint_ExplainText">Specifies the URL where encrypted forensics data is uploaded.
+
+Pre-configured value for ${escapeXml(config.orgName)}:
+${escapeXml(config.forensicsEndpoint || '(not configured)')}
+
+Forensics payloads are encrypted client-side using the configured Forensics Public Key before upload. The endpoint receives opaque encrypted blobs that can only be decrypted with your organization's private key.
+
+If not configured, forensics data will be queued locally but not uploaded.</string>
+
+      <!-- Update Interval -->
+      <string id="UpdateInterval_DisplayName">Blocklist Update Interval (minutes)</string>
+      <string id="UpdateInterval_ExplainText">Specifies how frequently the extension checks for blocklist updates, in minutes.
+
+Pre-configured value: ${config.updateInterval} minutes
+
+Minimum: 5 minutes
+Maximum: 1440 minutes (24 hours)
+Default: 60 minutes
+
+Lower values increase network traffic but provide faster protection against new threats.</string>
+
+      <!-- Signing Public Key -->
+      <string id="SigningPublicKey_DisplayName">Blocklist Signing Public Key</string>
+      <string id="SigningPublicKey_ExplainText">Specifies the P-256 ECDSA public key used to verify blocklist signatures.
+
+${escapeXml(config.orgName)}'s signing key has been pre-configured in the registry file.
+Key preview: ${escapeXml(signingKeyPreview)}
+
+The key must be provided in JWK (JSON Web Key) format. Blocklist updates will be rejected if they don't have a valid signature from this key.
+
+SECURITY: Keep your private key secure. If compromised, generate a new key pair immediately.</string>
+
+      <!-- Forensics Public Key -->
+      <string id="ForensicsPublicKey_DisplayName">Forensics Encryption Public Key</string>
+      <string id="ForensicsPublicKey_ExplainText">Specifies the RSA-OAEP public key used to encrypt forensics data.
+
+${escapeXml(config.orgName)}'s encryption key has been pre-configured in the registry file.
+
+The key must be provided in JWK format (RSA 2048-bit). Forensics payloads are encrypted client-side using hybrid encryption (RSA-OAEP + AES-GCM) to ensure zero-knowledge.
+
+Only your organization's private key can decrypt the forensics data.</string>
+
+      <!-- Enable Debug Logging -->
+      <string id="EnableDebugLogging_DisplayName">Enable Debug Logging</string>
+      <string id="EnableDebugLogging_ExplainText">Enables verbose debug logging in the browser console.
+
+When enabled, the extension logs detailed information about:
+- Blocklist loading and updates
+- Navigation blocking decisions
+- Forensics capture and upload
+- Error conditions
+
+Use this setting for troubleshooting deployment issues. Disable in production to reduce log noise.</string>
+
+    </stringTable>
+
+    <presentationTable>
+      <!-- Blocklist Endpoint -->
+      <presentation id="BlocklistEndpoint">
+        <textBox refId="BlocklistEndpoint_Value">
+          <label>Endpoint URL:</label>
+          <defaultValue>${escapeXml(config.blocklistEndpoint)}</defaultValue>
+        </textBox>
+      </presentation>
+
+      <!-- Organization ID -->
+      <presentation id="OrganizationId">
+        <textBox refId="OrganizationId_Value">
+          <label>Organization ID:</label>
+          <defaultValue>${escapeXml(generatedKeys.orgId || '')}</defaultValue>
+        </textBox>
+      </presentation>
+
+      <!-- Forensics Endpoint -->
+      <presentation id="ForensicsEndpoint">
+        <textBox refId="ForensicsEndpoint_Value">
+          <label>Forensics Endpoint URL:</label>
+          <defaultValue>${escapeXml(config.forensicsEndpoint)}</defaultValue>
+        </textBox>
+      </presentation>
+
+      <!-- Update Interval -->
+      <presentation id="UpdateInterval">
+        <decimalTextBox refId="UpdateInterval_Value" defaultValue="${config.updateInterval}">Update Interval (minutes):</decimalTextBox>
+      </presentation>
+
+      <!-- Signing Public Key -->
+      <presentation id="SigningPublicKey">
+        <textBox refId="SigningPublicKey_Value">
+          <label>Public Key (JWK format):</label>
+        </textBox>
+      </presentation>
+
+      <!-- Forensics Public Key -->
+      <presentation id="ForensicsPublicKey">
+        <textBox refId="ForensicsPublicKey_Value">
+          <label>Public Key (JWK format):</label>
+        </textBox>
+      </presentation>
+    </presentationTable>
+  </resources>
+</policyDefinitionResources>
+`;
+    }
+
+    /**
+     * Generate registry file with all values pre-configured
+     */
+    function generateRegistryFile(config) {
+      const signingKeyJson = generatedKeys.signingPublic
+        ? escapeRegValue(JSON.stringify(generatedKeys.signingPublic))
+        : '';
+      const encryptionKeyJson = generatedKeys.encryptionPublic
+        ? escapeRegValue(JSON.stringify(generatedKeys.encryptionPublic))
+        : '';
+      const updateIntervalHex = config.updateInterval.toString(16).padStart(8, '0');
+
+      return `Windows Registry Editor Version 5.00
+
+; BrowserDefense Chrome Extension - Pre-configured for ${config.orgName}
+; Generated: ${new Date().toISOString()}
+;
+; INSTRUCTIONS:
+; 1. Review the settings below
+; 2. Import using: reg import BrowserDefense-Config.reg (as Administrator)
+; 3. Restart Chrome to apply policies
+; 4. Verify at: chrome://policy
+;
+; Extension ID: ${config.extensionId}
+
+; =============================================================================
+; Extension Installation Settings
+; Force-install the extension and pin to toolbar
+; =============================================================================
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Google\\Chrome\\ExtensionSettings\\${config.extensionId}]
+@="{\\"installation_mode\\":\\"force_installed\\",\\"update_url\\":\\"${escapeRegValue(config.updateUrl)}\\",\\"toolbar_pin\\":\\"force_pinned\\"}"
+
+; =============================================================================
+; BrowserDefense Extension Configuration
+; These settings are read by the extension via chrome.storage.managed
+; =============================================================================
+[HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Google\\Chrome\\3rdparty\\extensions\\${config.extensionId}\\policy]
+
+; Organization ID
+"org_id"="${generatedKeys.orgId || ''}"
+
+; Blocklist Endpoint URL
+"blocklist_endpoint"="${config.blocklistEndpoint}"
+
+${config.forensicsEndpoint ? `; Forensics Upload Endpoint
+"forensics_endpoint"="${config.forensicsEndpoint}"
+
+` : ''}; Update Interval in Minutes
+"update_interval_minutes"=dword:${updateIntervalHex}
+
+; Signing Public Key (P-256 ECDSA, JWK format)
+"signing_public_key"="${signingKeyJson}"
+
+${encryptionKeyJson ? `; Forensics Encryption Public Key (RSA-OAEP, JWK format)
+"forensics_public_key"="${encryptionKeyJson}"
+
+` : ''}; Debug Logging (0 = disabled, 1 = enabled)
+"enable_debug_logging"=dword:00000000
+`;
+    }
+
+    /**
+     * Generate Intune OMA-URI JSON config
+     */
+    function generateIntuneJson(config) {
+      const signingKeyJson = generatedKeys.signingPublic
+        ? JSON.stringify(generatedKeys.signingPublic)
+        : '';
+      const encryptionKeyJson = generatedKeys.encryptionPublic
+        ? JSON.stringify(generatedKeys.encryptionPublic)
+        : '';
+
+      const omaSettings = [
+        {
+          name: 'BrowserDefense - ExtensionSettings Policy',
+          description: `Force install BrowserDefense extension for ${config.orgName}`,
+          omaUri: './Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/ExtensionSettings',
+          dataType: 'String',
+          value: JSON.stringify({
+            [config.extensionId]: {
+              installation_mode: 'force_installed',
+              update_url: config.updateUrl,
+              toolbar_pin: 'force_pinned'
+            }
+          })
+        },
+        {
+          name: 'BrowserDefense - Organization ID',
+          description: 'Unique identifier for forensics data',
+          omaUri: `./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/${config.extensionId}/policy/org_id`,
+          dataType: 'String',
+          value: generatedKeys.orgId || ''
+        },
+        {
+          name: 'BrowserDefense - Blocklist Endpoint',
+          description: 'URL for fetching signed blocklist updates',
+          omaUri: `./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/${config.extensionId}/policy/blocklist_endpoint`,
+          dataType: 'String',
+          value: config.blocklistEndpoint
+        },
+        {
+          name: 'BrowserDefense - Update Interval',
+          description: 'Blocklist update frequency in minutes',
+          omaUri: `./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/${config.extensionId}/policy/update_interval_minutes`,
+          dataType: 'Integer',
+          value: config.updateInterval
+        },
+        {
+          name: 'BrowserDefense - Signing Public Key',
+          description: 'P-256 ECDSA public key for signature verification',
+          omaUri: `./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/${config.extensionId}/policy/signing_public_key`,
+          dataType: 'String',
+          value: signingKeyJson
+        }
+      ];
+
+      if (config.forensicsEndpoint) {
+        omaSettings.push({
+          name: 'BrowserDefense - Forensics Endpoint',
+          description: 'URL for uploading encrypted forensics data',
+          omaUri: `./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/${config.extensionId}/policy/forensics_endpoint`,
+          dataType: 'String',
+          value: config.forensicsEndpoint
+        });
+      }
+
+      if (encryptionKeyJson) {
+        omaSettings.push({
+          name: 'BrowserDefense - Forensics Encryption Key',
+          description: 'RSA-OAEP public key for encrypting forensics',
+          omaUri: `./Device/Vendor/MSFT/Policy/Config/Chrome~Policy~googlechrome~Extensions/3rdparty/extensions/${config.extensionId}/policy/forensics_public_key`,
+          dataType: 'String',
+          value: encryptionKeyJson
+        });
+      }
+
+      return {
+        '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#',
+        contentVersion: '1.0.0.0',
+        description: `BrowserDefense Chrome Extension - Intune Configuration for ${config.orgName}`,
+        metadata: {
+          displayName: `BrowserDefense Configuration - ${config.orgName}`,
+          description: 'Configure BrowserDefense Chrome extension via Intune custom policy',
+          version: '1.0.0',
+          platform: 'Windows 10 and later',
+          category: 'Security',
+          generatedAt: new Date().toISOString()
+        },
+        omaSettings
+      };
+    }
+
+    /**
+     * Generate README for the ADMX package
+     */
+    function generateReadme(config) {
+      return `BrowserDefense ADMX Package - ${config.orgName}
+${'='.repeat(40 + config.orgName.length)}
+
+Generated: ${new Date().toISOString()}
+Extension ID: ${config.extensionId}
+
+CONTENTS
+--------
+- BrowserDefense.admx       : Policy template (defines UI in Group Policy Editor)
+- en-US/BrowserDefense.adml : Localized strings (descriptions, labels)
+- BrowserDefense-Config.reg : Pre-configured registry values (keys & endpoints)
+- README.txt          : This file
+
+DEPLOYMENT INSTRUCTIONS
+-----------------------
+
+Option A: Group Policy (Recommended for domains)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Copy BrowserDefense.admx to:
+   \\\\<domain>\\SYSVOL\\<domain>\\Policies\\PolicyDefinitions\\
+   (or C:\\Windows\\PolicyDefinitions\\ for local policy)
+
+2. Copy en-US\\BrowserDefense.adml to:
+   \\\\<domain>\\SYSVOL\\<domain>\\Policies\\PolicyDefinitions\\en-US\\
+   (create en-US folder if it doesn't exist)
+
+3. Open Group Policy Management Console (gpmc.msc)
+
+4. Create or edit a GPO linked to your target OU
+
+5. Navigate to:
+   Computer Configuration > Administrative Templates > Google > BrowserDefense
+
+6. The settings are pre-documented with your organization's values.
+   Most values are already configured - just enable the policies.
+
+Option B: Registry Import (Quick deployment)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1. Open Command Prompt as Administrator
+
+2. Run: reg import BrowserDefense-Config.reg
+
+3. Restart Chrome
+
+4. Verify at chrome://policy
+
+
+VERIFICATION
+------------
+After deployment, verify on a managed endpoint:
+1. Open Chrome
+2. Navigate to chrome://policy
+3. Look for policies starting with "3rdparty.extensions.${config.extensionId}"
+4. Verify the extension is installed and pinned
+
+SECURITY NOTES
+--------------
+- The signing public key in this package verifies blocklist signatures
+- Keep the corresponding PRIVATE key secure (not included here)
+- If the private key is compromised, generate new keys immediately
+- The encryption public key protects forensics data in transit
+- Only your private key can decrypt forensics data
+
+SUPPORT
+-------
+For issues with BrowserDefense deployment, contact your security team.
+`;
+    }
+
+    // ============ ZIP Creation (minimal implementation) ============
+
+    /**
+     * Create a ZIP file from a collection of files
+     * Uses a minimal ZIP implementation without external dependencies
+     */
+    function createZip(files) {
+      const encoder = new TextEncoder();
+      const chunks = [];
+      const centralDir = [];
+      let offset = 0;
+
+      for (const file of files) {
+        const nameBytes = encoder.encode(file.name);
+        const contentBytes = typeof file.content === 'string'
+          ? encoder.encode(file.content)
+          : file.content;
+
+        // Local file header
+        const localHeader = new Uint8Array(30 + nameBytes.length);
+        const localView = new DataView(localHeader.buffer);
+
+        localView.setUint32(0, 0x04034b50, true);  // Local file header signature
+        localView.setUint16(4, 20, true);          // Version needed
+        localView.setUint16(6, 0, true);           // General purpose flag
+        localView.setUint16(8, 0, true);           // Compression method (store)
+        localView.setUint16(10, 0, true);          // Last mod time
+        localView.setUint16(12, 0, true);          // Last mod date
+        localView.setUint32(14, crc32(contentBytes), true);  // CRC-32
+        localView.setUint32(18, contentBytes.length, true);  // Compressed size
+        localView.setUint32(22, contentBytes.length, true);  // Uncompressed size
+        localView.setUint16(26, nameBytes.length, true);     // File name length
+        localView.setUint16(28, 0, true);          // Extra field length
+        localHeader.set(nameBytes, 30);
+
+        chunks.push(localHeader);
+        chunks.push(contentBytes);
+
+        // Central directory entry
+        const centralEntry = new Uint8Array(46 + nameBytes.length);
+        const centralView = new DataView(centralEntry.buffer);
+
+        centralView.setUint32(0, 0x02014b50, true);  // Central directory signature
+        centralView.setUint16(4, 20, true);          // Version made by
+        centralView.setUint16(6, 20, true);          // Version needed
+        centralView.setUint16(8, 0, true);           // General purpose flag
+        centralView.setUint16(10, 0, true);          // Compression method
+        centralView.setUint16(12, 0, true);          // Last mod time
+        centralView.setUint16(14, 0, true);          // Last mod date
+        centralView.setUint32(16, crc32(contentBytes), true);  // CRC-32
+        centralView.setUint32(20, contentBytes.length, true);  // Compressed size
+        centralView.setUint32(24, contentBytes.length, true);  // Uncompressed size
+        centralView.setUint16(28, nameBytes.length, true);     // File name length
+        centralView.setUint16(30, 0, true);          // Extra field length
+        centralView.setUint16(32, 0, true);          // File comment length
+        centralView.setUint16(34, 0, true);          // Disk number start
+        centralView.setUint16(36, 0, true);          // Internal file attributes
+        centralView.setUint32(38, 0, true);          // External file attributes
+        centralView.setUint32(42, offset, true);     // Relative offset of local header
+        centralEntry.set(nameBytes, 46);
+
+        centralDir.push(centralEntry);
+        offset += localHeader.length + contentBytes.length;
+      }
+
+      // Add central directory
+      const centralDirOffset = offset;
+      let centralDirSize = 0;
+      for (const entry of centralDir) {
+        chunks.push(entry);
+        centralDirSize += entry.length;
+      }
+
+      // End of central directory
+      const endRecord = new Uint8Array(22);
+      const endView = new DataView(endRecord.buffer);
+
+      endView.setUint32(0, 0x06054b50, true);   // End of central directory signature
+      endView.setUint16(4, 0, true);            // Disk number
+      endView.setUint16(6, 0, true);            // Disk with central directory
+      endView.setUint16(8, files.length, true); // Number of entries on this disk
+      endView.setUint16(10, files.length, true);// Total number of entries
+      endView.setUint32(12, centralDirSize, true);    // Size of central directory
+      endView.setUint32(16, centralDirOffset, true);  // Offset of central directory
+      endView.setUint16(20, 0, true);           // Comment length
+
+      chunks.push(endRecord);
+
+      // Combine all chunks
+      const totalLength = chunks.reduce((sum, chunk) => sum + chunk.length, 0);
+      const result = new Uint8Array(totalLength);
+      let pos = 0;
+      for (const chunk of chunks) {
+        result.set(chunk, pos);
+        pos += chunk.length;
+      }
+
+      return result;
+    }
+
+    /**
+     * CRC-32 calculation for ZIP
+     */
+    function crc32(data) {
+      let crc = 0xffffffff;
+      const table = getCrc32Table();
+      for (let i = 0; i < data.length; i++) {
+        crc = (crc >>> 8) ^ table[(crc ^ data[i]) & 0xff];
+      }
+      return (crc ^ 0xffffffff) >>> 0;
+    }
+
+    let crc32Table = null;
+    function getCrc32Table() {
+      if (crc32Table) return crc32Table;
+      crc32Table = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let j = 0; j < 8; j++) {
+          c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        crc32Table[i] = c;
+      }
+      return crc32Table;
+    }
+
+    // ============ Export Functions ============
+
+    function validateExport() {
+      if (!generatedKeys.signingPublic || !generatedKeys.encryptionPublic) {
+        showStatus('Please generate keys first before exporting.', true);
+        return false;
+      }
+      return true;
+    }
+
+    function exportAdmxPackage() {
+      if (!validateExport()) return;
+
+      const config = getOrgConfig();
+      const orgSlug = config.orgName.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'browserdefense';
+
+      const files = [
+        { name: 'BrowserDefense.admx', content: generateAdmx(config) },
+        { name: 'en-US/BrowserDefense.adml', content: generateAdml(config) },
+        { name: 'BrowserDefense-Config.reg', content: generateRegistryFile(config) },
+        { name: 'README.txt', content: generateReadme(config) }
+      ];
+
+      const zipData = createZip(files);
+      const blob = new Blob([zipData], { type: 'application/zip' });
+      downloadBlob(blob, `browserdefense-${orgSlug}-admx.zip`);
+
+      document.getElementById('exportFileList').style.display = 'block';
+      showStatus('ADMX package exported successfully!');
+      setTimeout(hideStatus, 3000);
+    }
+
+    function exportRegistryFile() {
+      if (!validateExport()) return;
+
+      const config = getOrgConfig();
+      const regContent = generateRegistryFile(config);
+      const blob = new Blob([regContent], { type: 'text/plain' });
+
+      const orgSlug = config.orgName.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'browserdefense';
+      downloadBlob(blob, `browserdefense-${orgSlug}-config.reg`);
+
+      showStatus('Registry file exported successfully!');
+      setTimeout(hideStatus, 3000);
+    }
+
+    function exportIntuneJson() {
+      if (!validateExport()) return;
+
+      const config = getOrgConfig();
+      const intuneConfig = generateIntuneJson(config);
+      const blob = new Blob([JSON.stringify(intuneConfig, null, 2)], { type: 'application/json' });
+
+      const orgSlug = config.orgName.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'browserdefense';
+      downloadBlob(blob, `browserdefense-${orgSlug}-intune.json`);
+
+      showStatus('Intune configuration exported successfully!');
+      setTimeout(hideStatus, 3000);
+    }
+
+    // ============ Apple MDM (mobileconfig) Generation ============
+
+    /**
+     * Generate a UUID v4
+     */
+    function generateUUID() {
+      return crypto.randomUUID().toUpperCase();
+    }
+
+    /**
+     * Escape string for plist XML
+     */
+    function escapePlist(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    /**
+     * Generate Apple mobileconfig profile with pre-configured keys
+     */
+    function generateMobileconfig(config) {
+      const signingKeyJson = generatedKeys.signingPublic
+        ? JSON.stringify(generatedKeys.signingPublic)
+        : '';
+      const encryptionKeyJson = generatedKeys.encryptionPublic
+        ? JSON.stringify(generatedKeys.encryptionPublic)
+        : '';
+
+      // Generate unique UUIDs for each payload
+      const profileUUID = generateUUID();
+      const extensionSettingsUUID = generateUUID();
+      const policyUUID = generateUUID();
+
+      // Create reverse-DNS identifier from org name
+      const orgIdentifier = config.orgName
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '')
+        || 'organization';
+
+      return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  BrowserDefense Chrome Extension - macOS Configuration Profile
+  Organization: ${escapePlist(config.orgName)}
+  Generated: ${new Date().toISOString()}
+
+  Deploy via:
+  - Jamf Pro: Upload as Configuration Profile
+  - Kandji: Library > Custom Profiles
+  - Mosyle: Management > Profiles
+  - Workspace ONE: Devices > Profiles
+  - Manual: sudo profiles install -path BrowserDefense.mobileconfig
+
+  Extension ID: ${escapePlist(config.extensionId)}
+-->
+<plist version="1.0">
+<dict>
+    <key>PayloadContent</key>
+    <array>
+        <!-- Chrome ExtensionSettings - Force Install -->
+        <dict>
+            <key>PayloadType</key>
+            <string>com.google.Chrome</string>
+            <key>PayloadIdentifier</key>
+            <string>com.${orgIdentifier}.browserdefense.chrome.extensionsettings</string>
+            <key>PayloadUUID</key>
+            <string>${extensionSettingsUUID}</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>PayloadDisplayName</key>
+            <string>BrowserDefense Extension Installation</string>
+            <key>PayloadDescription</key>
+            <string>Force-installs BrowserDefense Chrome extension for ${escapePlist(config.orgName)}</string>
+            <key>ExtensionSettings</key>
+            <dict>
+                <key>${escapePlist(config.extensionId)}</key>
+                <dict>
+                    <key>installation_mode</key>
+                    <string>force_installed</string>
+                    <key>update_url</key>
+                    <string>${escapePlist(config.updateUrl)}</string>
+                    <key>toolbar_pin</key>
+                    <string>force_pinned</string>
+                </dict>
+            </dict>
+        </dict>
+
+        <!-- BrowserDefense Extension Policy -->
+        <dict>
+            <key>PayloadType</key>
+            <string>com.google.Chrome.extensions.${escapePlist(config.extensionId)}</string>
+            <key>PayloadIdentifier</key>
+            <string>com.${orgIdentifier}.browserdefense.chrome.policy</string>
+            <key>PayloadUUID</key>
+            <string>${policyUUID}</string>
+            <key>PayloadVersion</key>
+            <integer>1</integer>
+            <key>PayloadDisplayName</key>
+            <string>BrowserDefense Extension Configuration</string>
+            <key>PayloadDescription</key>
+            <string>Configures BrowserDefense extension settings for ${escapePlist(config.orgName)}</string>
+
+            <!-- Organization ID -->
+            <key>org_id</key>
+            <string>${escapePlist(generatedKeys.orgId || '')}</string>
+
+            <!-- Blocklist Endpoint URL -->
+            <key>blocklist_endpoint</key>
+            <string>${escapePlist(config.blocklistEndpoint)}</string>
+${config.forensicsEndpoint ? `
+            <!-- Forensics Upload Endpoint -->
+            <key>forensics_endpoint</key>
+            <string>${escapePlist(config.forensicsEndpoint)}</string>
+` : ''}
+            <!-- Update Interval (minutes) -->
+            <key>update_interval_minutes</key>
+            <integer>${config.updateInterval}</integer>
+
+            <!-- Signing Public Key (P-256 ECDSA, JWK format) -->
+            <key>signing_public_key</key>
+            <string>${escapePlist(signingKeyJson)}</string>
+${encryptionKeyJson ? `
+            <!-- Forensics Encryption Key (RSA-OAEP, JWK format) -->
+            <key>forensics_public_key</key>
+            <string>${escapePlist(encryptionKeyJson)}</string>
+` : ''}
+            <!-- Debug Logging -->
+            <key>enable_debug_logging</key>
+            <false/>
+        </dict>
+    </array>
+
+    <key>PayloadDisplayName</key>
+    <string>BrowserDefense - ${escapePlist(config.orgName)}</string>
+    <key>PayloadDescription</key>
+    <string>Deploys and configures BrowserDefense browser-based IOC blocking extension for ${escapePlist(config.orgName)}. Generated ${new Date().toLocaleDateString()}.</string>
+    <key>PayloadIdentifier</key>
+    <string>com.${orgIdentifier}.browserdefense.profile</string>
+    <key>PayloadOrganization</key>
+    <string>${escapePlist(config.orgName)}</string>
+    <key>PayloadRemovalDisallowed</key>
+    <true/>
+    <key>PayloadScope</key>
+    <string>System</string>
+    <key>PayloadType</key>
+    <string>Configuration</string>
+    <key>PayloadUUID</key>
+    <string>${profileUUID}</string>
+    <key>PayloadVersion</key>
+    <integer>1</integer>
+</dict>
+</plist>
+`;
+    }
+
+    function exportMobileconfig() {
+      if (!validateExport()) return;
+
+      const config = getOrgConfig();
+      const mobileconfig = generateMobileconfig(config);
+      const blob = new Blob([mobileconfig], { type: 'application/x-apple-aspen-config' });
+
+      const orgSlug = config.orgName.toLowerCase().replace(/[^a-z0-9]/g, '-') || 'browserdefense';
+      downloadBlob(blob, `BrowserDefense-${orgSlug}.mobileconfig`);
+
+      showStatus('Apple MDM profile exported successfully!');
+      setTimeout(hideStatus, 3000);
+    }
+
+    function exportMobileconfigUnsigned() {
+      // Same as exportMobileconfig - both are unsigned
+      // The "unsigned" button is just to make it clear
+      exportMobileconfig();
+    }
+
+    // ============ Main Logic ============
+
+    async function generateAllKeys() {
+      hideStatus();
+      generateBtn.disabled = true;
+      generateBtn.textContent = 'Generating...';
+
+      try {
+        // Get selected algorithm
+        const selectedAlgorithm = document.querySelector('input[name="algorithm"]:checked').value;
+
+        // Generate signing keypair based on selection
+        if (selectedAlgorithm === 'ed25519') {
+          // Check Ed25519 support
+          const ed25519Supported = await isEd25519Supported();
+          if (!ed25519Supported) {
+            showStatus('Ed25519 is not supported in this browser. Please use Chrome 113+ or select P-256 ECDSA.', true);
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate All Keys';
+            return;
+          }
+
+          const signingKeypair = await generateSigningKeypairEd25519();
+          generatedKeys.signingPublic = signingKeypair.publicKey;
+          generatedKeys.signingPrivate = signingKeypair.privateKey;
+          generatedKeys.algorithmVersion = 'ed25519-v2';
+        } else {
+          const signingKeypair = await generateSigningKeypairP256();
+          generatedKeys.signingPublic = signingKeypair.publicKey;
+          generatedKeys.signingPrivate = signingKeypair.privateKey;
+          generatedKeys.algorithmVersion = 'p256-v1';
+        }
+
+        // Generate encryption keypair (RSA-OAEP)
+        const encryptionKeypair = await generateEncryptionKeypair();
+        generatedKeys.encryptionPublic = encryptionKeypair.publicKey;
+        generatedKeys.encryptionPrivate = encryptionKeypair.privateKey;
+
+        // Generate salt and org ID
+        generatedKeys.salt = generateSalt();
+        generatedKeys.orgId = generateOrgId();
+
+        // Build GPO/MDM config
+        generatedKeys.config = {
+          org_id: generatedKeys.orgId,
+          public_encryption_key: generatedKeys.encryptionPublic,
+          public_signing_key: generatedKeys.signingPublic,
+          salt: generatedKeys.salt,
+          key_version: 1,
+          algorithm_version: generatedKeys.algorithmVersion
+        };
+
+        // Update UI
+        updatePreviews();
+        results.classList.add('visible');
+
+        const algoName = generatedKeys.algorithmVersion === 'ed25519-v2' ? 'Ed25519' : 'P-256 ECDSA';
+        showStatus(`Keys generated successfully using ${algoName}. Download and store them securely.`);
+
+        generateBtn.textContent = 'Regenerate All Keys';
+      } catch (e) {
+        showStatus('Key generation failed: ' + e.message, true);
+        console.error('Key generation error:', e);
+      } finally {
+        generateBtn.disabled = false;
+      }
+    }
+
+    // ============ Event Listeners ============
+
+    generateBtn.addEventListener('click', generateAllKeys);
+
+    // Check Ed25519 support on load and warn if not available
+    (async function checkSupport() {
+      const ed25519Supported = await isEd25519Supported();
+      if (!ed25519Supported) {
+        const warningDiv = document.createElement('div');
+        warningDiv.className = 'info-banner';
+        warningDiv.innerHTML = '<strong>Note:</strong> Ed25519 is not supported in this browser. P-256 ECDSA will be used instead. For Ed25519 support, use Chrome 113+ (May 2023).';
+        document.querySelector('.generate-section').insertBefore(warningDiv, document.querySelector('.algorithm-toggle'));
+
+        // Select P-256 by default
+        document.querySelector('input[value="p256"]').checked = true;
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "name": "@browserdefense/cli",
+  "version": "0.1.0",
+  "description": "CLI tool for managing BrowserDefense blocklists",
+  "type": "module",
+  "bin": {
+    "browserdefense": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.7",
+    "vitest": "^4.1.12"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "browserdefense",
+    "ioc",
+    "blocklist",
+    "security"
+  ],
+  "license": "MIT",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
